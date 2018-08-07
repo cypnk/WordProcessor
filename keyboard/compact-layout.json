@@ -1,134 +1,51 @@
 [
-  [
-    {
-      "a": 6,
-      "fa": [
-        1,
-        0,
-        1
-      ]
-    },
-    "!\n\n1\n\n\n\n\n\nTab",
-    {
-      "a": 4,
-      "fa": [
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        1,
-        1
-      ]
-    },
-    "\nQuery\n\n\n\n\n@\n2\n\nQ",
-    "\nScr Up\n\n\n\n\n#\n3\n\nW",
-    "\nUp\n\n\n\n\n$\n4\n\nE",
-    "\nPg Up\n\n\n\n\n%\n5\n\nR",
-    "\nDel Wd\nSup\n\n\n\n^\n6\n\nT",
-    "\nDel Ln\nItalic\n\n\n\n&\n7\n\nY",
-    "\nUndo\nRedo\n\n\n\n*\n8\n\nU",
-    "\nIndent\nOdnt\n\n\n\n(\n9\n\nI",
-    "\nOpen\n\n\n\n\n)\n0\n\nO",
-    {
-      "a": 6
-    },
-    "-\n\n_\n\n\n\n\n\nP",
-    {
-      "a": 7,
-      "f": 3
-    },
-    "Erase"
-  ],
-  [
-    {
-      "f": 3,
-      "w": 1.25
-    },
-    "Control",
-    {
-      "a": 4
-    },
-    "\nLft Wd\n\n\n\n\n\n\n\nA",
-    "\nLeft\nUndl\n\n\n\n\n\n\nS",
-    "\nRight\n\n\n\n\n\n\n\nD",
-    {
-      "n": true
-    },
-    "\nRgt Wd\n\n\n\n\n\n\n\nF",
-    "\nDel Lft\n\n\n\n\n\n\n\nG",
-    "\nDel Rgt\n\n\n\n\n+\n=\n\nH",
-    {
-      "a": 6,
-      "n": true
-    },
-    ":\n\n;\n\n\n\n\n\nJ",
-    "\"\n\n'\n\n\n\n\n\nK",
-    "|\n\n\\\n\n\n\n\n\nL",
-    {
-      "a": 7,
-      "f": 3,
-      "w": 1.75
-    },
-    "Enter"
-  ],
-  [
-    {
-      "a": 4,
-      "w": 1.75
-    },
-    "\n\nOption\n\n\n\n\n\n\nShift",
-    "\nScr Dn\n\n\n\n\n\n\n\nZ",
-    "\nDown\n\n\n\n\n\n\n\nX",
-    "\nPg Dn\n\n\n\n\n\n\n\nC",
-    "\nInsert\nSub\n\n\n\n\n\n\nV",
-    "\nLn Brk\nBold\n\n\n\n\n\n\nB",
-    "\nNew\n\n\n\n\n\n\n\nN",
-    "\nMemo\n\n\n\n\n\n\n\nM",
-    {
-      "fa": [
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        1
-      ]
-    },
-    "\n\n\n\n\n\n\"\n'\n\n<\n,",
-    "\n\n\n\n\n\n?\n/\n\n>\n.",
-    {
-      "w": 1.25
-    },
-    "\n\nOption\n\n\n\n\n\n\nShift"
-  ],
-  [
-    {
-      "x": 2,
-      "a": 7,
-      "f": 3,
-      "w": 1.25
-    },
-    "Help",
-    {
-      "f": 3,
-      "w": 2.75
-    },
-    "Layer",
-    {
-      "w": 2.75
-    },
-    "",
-    {
-      "f": 3,
-      "w": 1.25
-    },
-    "Graph"
-  ]
-]
+	{fa:[1,1,1,1,1,1,1,1,1,3,1]},
+	"\n\n\n\n\n\n!\n1\n\nTab",
+	"\nQuery\n\n\n\n\n@\n2\n\nQ",
+	"\nScr Up\n\n\n\n\n#\n3\n\nW",
+	"\nUp\n\n\n\n\n$\n4\n\nE",
+	"\nPg Up\n\n\n\n\n%\n5\n\nR",
+	"\nDel Wd\nSup\n\n\n\n^\n6\n\nT",
+	"\nDel Ln\nItalic\n\n\n\n&\n7\n\nY",
+	"\nUndo\nRedo\n\n\n\n*\n8\n\nU",
+	"\nIndent\nOdnt\n\n\n\n(\n9\n\nI",
+	"\nOpen\n\n\n\n\n)\n0\n\nO",
+	"\n\n\n\n\n\n-\n_\n\nP",
+	"\n\n\n\n\n\n\n\n\nErase"
+],
+[
+	{fa:[1,1,1,1,1,1,1,1,1,3,1]},
+	{w:1.25},
+	"\n\n\n\n\n\n\n\n\nControl",
+	"\nLft Wd\n\n\n\n\n\n\n\nA",
+	"\nLeft\nUndl\n\n\n\n\n\n\nS",
+	"\nRight\n\n\n\n\n\n\n\nD",
+	{n:true},
+	"\nRgt Wd\n\n\n\n\n\n\n\nF",
+	"\nDel Lft\n\n\n\n\n\n\n\nG",
+	"\nDel Rgt\n\n\n\n\n+\n=\n\nH",
+	{n:true},
+	"\n\n\n\n\n\n:\n;\n\nJ",
+	"\n\n\n\n\n\n\"\n'\n\nK",
+	"\n\n\n\n\n\n|\n\\\n\nL",
+	{w:1.75},
+	"\n\n\n\n\n\n\n\n\nEnter"
+],
+[
+	{fa:[1,1,1,1,1,1,1,1,1,3,1]},
+	{w:1.75},
+	"\n\nOption\n\n\n\n\n\n\nShift",
+	"\nScr Dn\n\n\n\n\n\n\n\nZ",
+	"\nDown\n\n\n\n\n\n\n\nX",
+	"\nPg Dn\n\n\n\n\n\n\n\nC",
+	"\nInsert\nSub\n\n\n\n\n\n\nV",
+	"\nLn Brk\nBold\n\n\n\n\n\n\nB",
+	"\nNew\n\n\n\n\n\n\n\nN",
+	"\nMemo\n\n\n\n\n\n\n\nM",
+	"\n\n\n\n\n\n\"\n'\n\n<\n,",
+	"\n\n\n\n\n\n?\n/\n\n>\n.",
+	{a:4,fa:[0,1,1,1,1,1,1,1,0,3,0]},
+	{w:1.25},
+	"\n\nOption\n\n\n\n\n\n\nShift"
+],
+[{a:7,x:2,w:1.25},"Help",{w:2.75},"Layer",{w:2.75},"",{w:1.25},"Graph"]
