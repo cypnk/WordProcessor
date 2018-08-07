@@ -1,4 +1,4 @@
-# WordProcessor
+# Word Processor
 A DIY word processor for taking notes or drafting documents
 
 This is a sketch area for some ideas on creating a utilitarian machine  
