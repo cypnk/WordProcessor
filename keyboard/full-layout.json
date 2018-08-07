@@ -1,0 +1,211 @@
+[
+  [
+    {
+      "a": 5
+    },
+    "~\n`",
+    "!\n1",
+    "@\n2",
+    "#\n3",
+    "$\n4",
+    "%\n5",
+    "^\n6",
+    "&\n7",
+    "*\n8",
+    "(\n9",
+    ")\n0",
+    "_\n-",
+    "+\n=",
+    {
+      "a": 7,
+      "w": 1.5
+    },
+    "Erase"
+  ],
+  [
+    {
+      "w": 1.5
+    },
+    "Tab",
+    {
+      "a": 4,
+      "f2": 1
+    },
+    "\nQuery\n\n\n\n\n\n\n\nQ",
+    {
+      "f2": 1
+    },
+    "\nScr Up\n\n\n\n\n\n\n\nW",
+    {
+      "f2": 1
+    },
+    "\nUp\n\n\n\n\n\n\n\nE",
+    {
+      "f2": 1
+    },
+    "\nPg Up\n\n\n\n\n\n\n\nR",
+    {
+      "f2": 1
+    },
+    "\nDel Wd\nSup\n\n\n\n\n\n\nT",
+    {
+      "f2": 1
+    },
+    "\nDel Ln\nItalic\n\n\n\n\n\n\nY",
+    {
+      "f2": 1
+    },
+    "\nUndo\nRedo\n\n\n\n\n\n\nU",
+    {
+      "f2": 1
+    },
+    "\nIndent\nOdnt\n\n\n\n\n\n\nI",
+    {
+      "f2": 1
+    },
+    "\nOpen\n\n\n\n\n\n\n\nO",
+    {
+      "a": 7
+    },
+    "P",
+    {
+      "a": 4,
+      "f2": 1
+    },
+    "\nCpy\n\n\n\n\n\n\n{\n\n[",
+    {
+      "f2": 1
+    },
+    "\nPst\n\n\n\n\n\n\n}\n\n]",
+    {
+      "a": 5,
+      "f": 3
+    },
+    "|\n\\"
+  ],
+  [
+    {
+      "a": 7,
+      "w": 1.75
+    },
+    "Control",
+    {
+      "a": 4,
+      "f2": 1
+    },
+    "\nLft Wd\n\n\n\n\n\n\n\nA",
+    {
+      "f2": 1
+    },
+    "\nLeft\nUndl\n\n\n\n\n\n\nS",
+    {
+      "f2": 1
+    },
+    "\nRight\n\n\n\n\n\n\n\nD",
+    {
+      "f2": 1,
+      "n": true
+    },
+    "\nRgt Wd\n\n\n\n\n\n\n\nF",
+    {
+      "f2": 1
+    },
+    "\nDel Lft\n\n\n\n\n\n\n\nG",
+    {
+      "f2": 1
+    },
+    "\nDel Rgt\n\n\n\n\n\n\n\nH",
+    {
+      "a": 7,
+      "n": true
+    },
+    "J",
+    "K",
+    "L",
+    {
+      "a": 5,
+      "f": 3
+    },
+    ":\n;",
+    {
+      "f": 3
+    },
+    "\"\n'",
+    {
+      "a": 7,
+      "w": 1.75
+    },
+    "Enter"
+  ],
+  [
+    {
+      "a": 4,
+      "f2": 1,
+      "w": 2.25
+    },
+    "\n\nOption\n\n\n\n\n\n\nShift",
+    {
+      "f2": 1
+    },
+    "\nScr Dn\n\n\n\n\n\n\n\nZ",
+    {
+      "f2": 1
+    },
+    "\nDown\n\n\n\n\n\n\n\nX",
+    {
+      "f2": 1
+    },
+    "\nPg Dn\n\n\n\n\n\n\n\nC",
+    {
+      "f2": 1
+    },
+    "\nInsert\nSub\n\n\n\n\n\n\nV",
+    {
+      "f2": 1
+    },
+    "\nLn Brk\nBold\n\n\n\n\n\n\nB",
+    {
+      "f2": 1
+    },
+    "\nNew\n\n\n\n\n\n\n\nN",
+    {
+      "f2": 1
+    },
+    "\nMemo\n\n\n\n\n\n\n\nM",
+    {
+      "a": 5,
+      "f": 3
+    },
+    "<\n,",
+    {
+      "f": 3
+    },
+    ">\n.",
+    {
+      "f": 3
+    },
+    "?\n/",
+    {
+      "a": 4,
+      "f2": 1,
+      "w": 2.25
+    },
+    "\n\nOption\n\n\n\n\n\n\nShift"
+  ],
+  [
+    {
+      "x": 2.88,
+      "a": 7,
+      "w": 1.25
+    },
+    "Help",
+    {
+      "w": 6.25
+    },
+    "",
+    {
+      "w": 1.25
+    },
+    "Graph"
+  ]
+]
