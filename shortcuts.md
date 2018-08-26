@@ -22,6 +22,12 @@ inspired by WordStar for DOS.
 	<td>^D</td><td>Right</td>
 </tr>
 <tr>
+	<td>^K</td><td>Line start</td>
+</tr>
+<tr>
+	<td>^L</td><td>Line end</td>
+</tr>
+<tr>
 	<td>^W</td><td>Scroll up</td>
 </tr>
 <tr>
