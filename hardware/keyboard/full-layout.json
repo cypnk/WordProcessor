@@ -34,8 +34,8 @@
 	"\nDel Rgt\n\n\n\n\n\n\n\nH",
 	{n:true},
 	"\n\n\n\n\n\n\n\n\nJ",
-	"\n\n\n\n\n\n\n\n\nK",
-	"\n\n\n\n\n\n\n\n\nL",
+	"\nLn St\n\n\n\n\n\n\n\nK",
+	"\nLn Ed\n\n\n\n\n\n\n\nL",
 	
 	{a:5,f:3},":\n;",
 	{f:3},"\"\n'",
