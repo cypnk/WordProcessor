@@ -39,6 +39,15 @@ inspired by WordStar for DOS.
 <tr>
 	<td>^C</td><td>Page down</td>
 </tr>
+<tr>
+	<td>^,</td><td>Document start</td>
+</tr>
+<tr>
+	<td>^.</td><td>Document end</td>
+</tr>
+<tr>
+	<td>^J</td><td>Return cursor to previous location</td>
+</tr>
 <tr><th colspan="2">Selections</th></tr>
 <tr><th>Shortcut</th><th>Action</th></tr>
 <tr>
