@@ -33,7 +33,7 @@
 	"\nDel Lft\n\n\n\n\n\n\n\nG",
 	"\nDel Rgt\n\n\n\n\n\n\n\nH",
 	{n:true},
-	"\n\n\n\n\n\n\n\n\nJ",
+	"\nCur\n\n\n\n\n\n\n\nJ",
 	"\nLn Sta\n\n\n\n\n\n\n\nK",
 	"\nLn End\n\n\n\n\n\n\n\nL",
 	
@@ -54,8 +54,9 @@
 	"\nNew\n\n\n\n\n\n\n\nN",
 	"\nMemo\n\n\n\n\n\n\n\nM",
 	
-	{a:5,f:3},"<\n,",
-	{f:3},">\n.",
+	{a:4,fa:[0,1,1,1,1,1,1,1,0,3,0]},
+	"\nSta\n\n\n\n\n\n\n<\n\n,",
+	"\nEnd\n\n\n\n\n\n\n>\n\n.",
 	{f:3},"?\n/",
 	
 	{a:4,fa:[0,1,1,1,1,1,1,1,0,3,0]},
