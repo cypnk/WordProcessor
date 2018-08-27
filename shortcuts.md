@@ -80,6 +80,9 @@ inspired by WordStar for DOS.
 	<td>^M</td><td>Memo / Citation on selected text</td>
 </tr>
 <tr>
+	<td>^P</td><td>Program / Create or execute subroutine</td>
+</tr>
+<tr>
 	<td>^U</td><td>Undo</td>
 </tr>
 <tr>
