@@ -29,8 +29,9 @@
 		<td>Nokia or similar, lower profile, 3.7V</td>
 	</tr>
 	<tr><th>Power supply</th><th>Notes</th></tr>
-	<tr><td>MAX745</td><td>Comprehensive DC-DC power supply and charger</td></tr>
 	<tr><td>BQ24650</td><td>MPPT Solar charge controller</td></tr>
+	<tr><td>MAX745</td><td>Comprehensive DC-DC power supply and charger</td></tr>
+	<tr><td>BMS</td><td>Balanced battery charger 4S (various)</td></tr>
 	<tr><th>Keyboard</th><th>Notes</th>
 	<tr><td>Keyswitch</td><td>Gateron Brown / Blue</td></tr>
 	<tr>
