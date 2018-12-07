@@ -15,7 +15,7 @@ BUILD_DIR	?= ./build
 BIN_DIR		?= ./bin
 
 # Find sources
-SRCS		:= $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c' -or -name '*.s')
+SRCS		:= $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c' -or -name '*.s' | LC_ALL=C sort)
 
 # Create object path
 OBJS		:= $(SRCS:%=$(BUILD_DIR)/%.o)
@@ -24,7 +24,7 @@ OBJS		:= $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS		:= $(OBJS:.o=.d)
 
 # Include settings
-INC_DIR		:= $(shell find $(SRC_DIR) -type d)
+INC_DIR		:= $(shell find $(SRC_DIR) -type d | LC_ALL=C sort)
 INC_FLAGS	:= $(addprefix -I,$(INC_DIR))
 
 # C++ Flags
