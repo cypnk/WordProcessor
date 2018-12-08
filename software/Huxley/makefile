@@ -31,9 +31,9 @@ INC_FLAGS	:= $(addprefix -I,$(INC_DIR))
 CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra \
 -Werror -pedantic -std=c++11 -O2
 
-
+# Add libraries
 $(BIN_DIR)/$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -lncurses
 
 # Assembly
 $(BUILD_DIR)/%.s.o: $.s
