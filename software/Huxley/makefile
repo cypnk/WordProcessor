@@ -33,7 +33,7 @@ CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra \
 
 # Add libraries
 $(BIN_DIR)/$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -lncurses
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -lSDL2 -lSDL2_ttf
 
 # Assembly
 $(BUILD_DIR)/%.s.o: $.s
