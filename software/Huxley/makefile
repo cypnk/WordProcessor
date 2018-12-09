@@ -28,10 +28,10 @@ INC_DIR		:= $(shell find $(SRC_DIR) -type d | LC_ALL=C sort)
 INC_FLAGS	:= $(addprefix -I,$(INC_DIR))
 
 # C++ Flags
-CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra \
--Werror -pedantic -std=c++11 -O2
+CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra -Wconversion \
+-Wunreachable-code -Wshadow -Werror -pedantic -std=c++17 -O2
 
-# Add libraries
+
 $(BIN_DIR)/$(TARGET): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -lSDL2 -lSDL2_ttf
 
