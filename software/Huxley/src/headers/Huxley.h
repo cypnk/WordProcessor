@@ -1,8 +1,12 @@
+#ifndef HUXLEY_H
+#define HUXLEY_H
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include "Editor.h"
 
 /**
  *  Special key input states
@@ -158,4 +162,5 @@ handleKeyUp( SDL_Event &event );
 void
 handleKeyEvents( SDL_Event &event );
 
+#endif
 
