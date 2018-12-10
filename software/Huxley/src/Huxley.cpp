@@ -26,6 +26,7 @@ initialize() {
 		WINDOW_HEIGHT,
 		WINDOW_FLAGS
 	);
+	
 	// Something went wrong?
 	if ( WINDOW == NULL ) {
 		printf( "Could not create window: %s\n", 
@@ -189,17 +190,28 @@ handleKeyInput( SDL_Event &event ) {
 	// Check special
 	switch( event.key.keysym.sym ) {
 		case SDLK_LCTRL:
-		case SDLK_RCTRL:
-		case SDLK_LCTRL:
 		case SDLK_RCTRL: {
 			break;
 		}
+		
 		default: {
 			// This is a special combo
-			if ( ctrl_key.any ) { return; }
+			if ( ctrl_key.any ) {
+				// Capture key symbol
+				// const char* c = 
+				//	SDL_GetKeyName( event.key.keysym.sym );
+				return; 
+			}
 			
-			// TODO: Handle buffer input and AltGr
-			printf( "%s\n", event.text.text );
+			// TODO: Handle buffer input E.G. AltGr
+			if ( event.type == SDL_TEXTINPUT  ) {
+				strcat( input, event.text.text );
+			} else if ( event.type == SDL_TEXTEDITING ) {
+				composition	= event.edit.text;
+				cursor		= event.edit.start;
+				selection	= event.edit.length;
+			}
+			break;
 		}
 	}
 }
@@ -221,7 +233,8 @@ handleKeyEvents( SDL_Event &event ) {
 				event.key.keysym.sym != SDLK_RSHIFT
 			) {
 				// TODO: Handle Ctrl + Shift + Key combo
-				printf( "CTRL+SHIFT+%d\n", event.key.keysym.sym );
+				printf( "CTRL+SHIFT+%d\n", 
+					event.key.keysym.sym );
 			}
 		// Ctrl already pressed and next key isn't shift
 		} else if ( ctrl_key.any ) {
@@ -230,7 +243,8 @@ handleKeyEvents( SDL_Event &event ) {
 				event.key.keysym.sym != SDLK_RSHIFT
 			) {
 				// TODO: Handle Ctrl+ Key combo
-				printf( "CTRL+%d\n", event.key.keysym.sym );
+				printf( "CTRL+%d\n", 
+					event.key.keysym.sym );
 			}
 		}
 		
@@ -250,7 +264,10 @@ handleKeyEvents( SDL_Event &event ) {
 		handleKeyUp( event );
 		
 	// Normal text input
-	} else if ( event.type == SDL_TEXTINPUT ) {
+	} else if ( 
+		event.type	== SDL_TEXTINPUT	|| 
+		event.type	== SDL_TEXTEDITING
+	) {
 		handleKeyInput( event );
 	}
 	
@@ -342,7 +359,10 @@ main() {
 				
 				// Window related event
 				case SDL_WINDOWEVENT: {
-					if ( event.window.windowID == windowID ) {
+					if ( 
+						event.window.windowID == 
+						windowID 
+					) {
 						handleWindowEvents( event );
 					}
 					break;
