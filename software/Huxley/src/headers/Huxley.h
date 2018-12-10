@@ -114,6 +114,18 @@ CURRENT {
 	int	win;
 } status;
 
+/**
+ *  Cursor
+ */
+float
+CUR_TIMER	= 1.0f;
+
+float
+CUR_BLINK	= 2.0f;
+
+SDL_Rect 
+CURSOR		= { 200, 200, 10, 20 };
+
 
 /**
  *  Base operations
