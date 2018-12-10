@@ -186,14 +186,19 @@ handleKeyUp( SDL_Event &event ) {
  */
 void
 handleKeyInput( SDL_Event &event ) {
+	// Check special
 	switch( event.key.keysym.sym ) {
 		case SDLK_LCTRL:
 		case SDLK_RCTRL:
-		case SDLK_LSHIFT:
-		case SDLK_RSHIFT: {
+		case SDLK_LCTRL:
+		case SDLK_RCTRL: {
 			break;
 		}
 		default: {
+			// This is a special combo
+			if ( ctrl_key.any ) { return; }
+			
+			// TODO: Handle buffer input and AltGr
 			printf( "%s\n", event.text.text );
 		}
 	}
@@ -228,12 +233,14 @@ handleKeyEvents( SDL_Event &event ) {
 				printf( "CTRL+%d\n", event.key.keysym.sym );
 			}
 		}
+		
+		// Continue handling
 		handleKeyDown( event );
 		
 		// Both left and right keys were pressed
 		if ( shift_key.left && shift_key.right ) {
 			// TODO: On the prototype, this will enable CapsLock
-			// since he prototype keyboard doesn't have that key
+			// since that keyboard won't have the key
 			printf( "Capslock enabled\n" );
 		}
 	}
