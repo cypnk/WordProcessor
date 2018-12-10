@@ -20,6 +20,8 @@ SPECIAL_KEY {
  */
 SDL_Window	*WINDOW;
 SDL_Renderer	*RENDERER;
+TTF_Font	*FONT;
+SDL_Color	COLOR;
 
 int 
 WINDOW_WIDTH	= 800;
@@ -32,6 +34,12 @@ WINDOW_TITLE	= "Huxley";
 
 Uint32
 WINDOW_FLAGS	= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+
+int
+FONT_SIZE	= 11;
+
+const char*
+FONT_FILE	= "bin/assets/fonts/NotoSansMono-Regular.ttf";
 
 // Color option
 struct
@@ -111,6 +119,9 @@ initialize();
 
 void
 resetRender( RGB bg_color );
+
+void
+setupFont( RGB fb_color );
 
 void
 end( int e );
