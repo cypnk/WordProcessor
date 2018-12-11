@@ -360,7 +360,7 @@ int
 main() {
 	// Begin
 	initialize();
-	Uint32 windowID = SDL_GetWindowID( WINDOW );
+	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	
 	// Event loop
 	while( 1 ) {
@@ -375,8 +375,8 @@ main() {
 				// Window related event
 				case SDL_WINDOWEVENT: {
 					if ( 
-						event.window.windowID == 
-						windowID 
+						windowID ==
+						event.window.windowID 
 					) {
 						handleWindowEvents( event );
 					}
