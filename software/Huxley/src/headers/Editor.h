@@ -97,6 +97,12 @@
 #define T_BREAK		0x0038
 
 /**
+ *  Helpers
+ */
+#define ARRAY_SIZE( a ) \
+	( sizeof( a ) / sizeof( *( a ) ) )
+
+/**
  *  Text input
  */
 extern char* input;
@@ -104,18 +110,6 @@ extern char* composition;
 
 extern Sint32 cursor;
 extern Sint32 selection;
-
-/**
- *  Command key format
- */
-struct command {
-	SDL_Keycode	code	= SDLK_UNKNOWN;
-	int		ctrl	= 0;
-	int		shift	= 0;
-	int		alt	= 0;  // Not used for now
-	unsigned char	action	= 0x0000;
-	
-};
 
 void
 sendCombo( int ctrl, int shift, SDL_Keycode &code );
@@ -125,6 +119,4 @@ applyCommand( unsigned char action );
 
 
 #endif
-
-
 
