@@ -4,9 +4,13 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string>
+#include <unordered_map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Editor.h"
+
+
+#define HUXLEY_VERSION "0.0.1"
 
 /**
  *  Special key input states
@@ -45,6 +49,11 @@ FONT_SIZE	= 11;
 const char*
 FONT_FILE	= "bin/assets/fonts/NotoSansMono-Regular.ttf";
 
+// Render 
+//std::unordered_map<SDL_Keycode, SDL_Texture>
+//SYMBOL_CACHE;
+
+
 // Color option
 struct
 RGB {
@@ -58,7 +67,6 @@ RGB {
 struct
 COLORS {
 	// Standard
-	
 	RGB black	{ 0, 0, 0, 1 };
 	RGB white	{ 255, 255, 255, 1 };
 	
@@ -138,6 +146,12 @@ resetRender( RGB bg_color );
 
 void
 setupFont( RGB fb_color );
+
+void
+loadSymbols();
+
+void
+cacheSymbol( const char* c );
 
 void
 end( int e );
