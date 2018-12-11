@@ -285,6 +285,22 @@ handleKeyEvents( SDL_Event &event ) {
 		event.type	== SDL_TEXTEDITING
 	) {
 		handleKeyInput( event );
+	
+	// Navigation or special editing?
+	} else if (
+		code		== SDLK_UP		|| 
+		code		== SDLK_DOWN		|| 
+		code		== SDLK_LEFT		|| 
+		code		== SDLK_RIGHT		|| 
+		code		== SDLK_HOME		|| 
+		code		== SDLK_END		|| 
+		code		== SDLK_PAGEUP		|| 
+		code		== SDLK_PAGEDOWN	|| 
+		code		== SDLK_RETURN		|| 
+		code		== SDLK_TAB		|| 
+		code		== SDLK_DELETE
+	) {
+		sendCombo( ctrl_key.any, shift_key.any, code );
 	}
 }
 
