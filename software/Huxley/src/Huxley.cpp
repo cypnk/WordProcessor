@@ -34,9 +34,13 @@ initialize() {
 		end( 1 );
 	}
 	
+	// Set size
+	status.w	= WINDOW_WIDTH;
+	status.h	= WINDOW_HEIGHT;
+	
 	// Create renderer
 	RENDERER	= SDL_CreateRenderer( WINDOW, -1, 0 );
-
+	
 	// Set program defaults ( paper background, coal foreground )
 	resetRender( COLORS.paper );
 	setupFont( COLORS.coal );
@@ -69,15 +73,12 @@ setupFont( RGB fg_color ) {
 	}
 	
 	FONT	= TTF_OpenFont( FONT_FILE, FONT_SIZE );
-	
 	if ( !FONT ) {
 		printf("TTF_OpenFont error: %s\n", TTF_GetError());
 		end( 1 );
 	}
 	
-	COLOR.r		= fg_color.R;
-	COLOR.b		= fg_color.B;
-	COLOR.g		= fg_color.G;
+	COLOR	= { fg_color.R, fg_color.B, fg_color.G, 255 };
 }
 
 /**
@@ -187,32 +188,22 @@ handleKeyUp( SDL_Event &event ) {
  */
 void
 handleKeyInput( SDL_Event &event ) {
-	// Check special
-	switch( event.key.keysym.sym ) {
-		case SDLK_LCTRL:
-		case SDLK_RCTRL: {
-			break;
-		}
-		
-		default: {
-			// This is a special combo
-			if ( ctrl_key.any ) {
-				// Capture key symbol
-				// const char* c = 
-				//	SDL_GetKeyName( event.key.keysym.sym );
-				return; 
-			}
-			
-			// TODO: Handle buffer input E.G. AltGr
-			if ( event.type == SDL_TEXTINPUT  ) {
-				strcat( input, event.text.text );
-			} else if ( event.type == SDL_TEXTEDITING ) {
-				composition	= event.edit.text;
-				cursor		= event.edit.start;
-				selection	= event.edit.length;
-			}
-			break;
-		}
+	if ( ctrl_key.any || alt_key.any ) {
+		return;
+	}
+	
+	
+	// TODO: Handle buffer input E.G. AltGr
+	if ( event.type == SDL_TEXTINPUT  ) {
+		printf( "%s\n", event.edit.text );
+		//strcat( input, event.text.text );
+	} else if ( event.type == SDL_TEXTEDITING ) {
+		//composition	= event.edit.text;
+		//cursor		= event.edit.start;
+		//selection	= event.edit.length;
+	} else {
+		const char* c	= SDL_GetKeyName( event.key.keysym.sym );
+		printf( "%s\n", c );
 	}
 }
 
@@ -221,31 +212,56 @@ handleKeyInput( SDL_Event &event ) {
  */
 void
 handleKeyEvents( SDL_Event &event ) {
+	// Use keycode for simplicity
+	SDL_Keycode code = event.key.keysym.sym;
 	
 	// Check for keydown events
 	if ( event.type == SDL_KEYDOWN ) {
 		// Ctrl + Shift already pressed and next key isn't one of them
 		if ( ctrl_key.any && shift_key.any ) {
 			if ( 
-				event.key.keysym.sym != SDLK_LCTRL	&&
-				event.key.keysym.sym != SDLK_RCTRL	&&
-				event.key.keysym.sym != SDLK_LSHIFT	&&
-				event.key.keysym.sym != SDLK_RSHIFT
+				code != SDLK_LCTRL	&&
+				code != SDLK_RCTRL	&&
+				code != SDLK_LSHIFT	&&
+				code != SDLK_RSHIFT
 			) {
-				// TODO: Handle Ctrl + Shift + Key combo
-				printf( "CTRL+SHIFT+%d\n", 
-					event.key.keysym.sym );
+				// Handle Ctrl + Shift + Key combo
+				sendCombo( ctrl_key.any, shift_key.any, 
+					code );
+				return;
 			}
 		// Ctrl already pressed and next key isn't shift
 		} else if ( ctrl_key.any ) {
-			if ( 
-				event.key.keysym.sym != SDLK_LSHIFT	&&
-				event.key.keysym.sym != SDLK_RSHIFT
+			// Ignore second control press
+			if (
+				code == SDLK_LCTRL	||
+				code == SDLK_RCTRL
 			) {
-				// TODO: Handle Ctrl+ Key combo
-				printf( "CTRL+%d\n", 
-					event.key.keysym.sym );
+				
+				
+			// TODO: Something with Alt (special symbols)
+			} else if (
+				code == SDLK_LALT	||
+				code == SDLK_RALT
+			) {
+				
+				
+			// Ignore shift press
+			} else if ( 
+				code == SDLK_LSHIFT	||
+				code == SDLK_RSHIFT
+			) {
+				
+			} else { 
+				// Handle Ctrl+ Key combo
+				sendCombo( ctrl_key.any, shift_key.any,
+					code );
+				return;
 			}
+			
+		// TODO: Symbol selection with Ctrl + Alt	
+		} else if ( alt_key.any ) {
+			
 		}
 		
 		// Continue handling
@@ -255,7 +271,7 @@ handleKeyEvents( SDL_Event &event ) {
 		if ( shift_key.left && shift_key.right ) {
 			// TODO: On the prototype, this will enable CapsLock
 			// since that keyboard won't have the key
-			printf( "Capslock enabled\n" );
+			printf( "Capslock\n" );
 		}
 	}
 	
@@ -270,7 +286,6 @@ handleKeyEvents( SDL_Event &event ) {
 	) {
 		handleKeyInput( event );
 	}
-	
 }
 
 /**
