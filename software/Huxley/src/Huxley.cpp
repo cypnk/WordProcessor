@@ -378,6 +378,11 @@ end( int e ) {
 bool
 eventLoop() {
 	SDL_Event event;
+	static Uint32 windowID = SDL_GetWindowID( WINDOW );
+	if ( !windowID ) {
+		printf("WindowID error: %s\n", SDL_GetError());
+		end( 1 );
+	}
 	
 	// Get window events
 	while( SDL_PollEvent( &event ) ) {
@@ -415,7 +420,6 @@ int
 main() {
 	// Begin
 	initialize();
-	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	
 	// Event loop
 	while( eventLoop() ) {
