@@ -43,6 +43,9 @@ WINDOW_TITLE	= "Huxley";
 Uint32
 WINDOW_FLAGS	= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 
+Uint32
+LOOP_WAIT	= 10;
+
 int
 FONT_SIZE	= 11;
 
@@ -140,6 +143,9 @@ CURSOR		= { 200, 200, 10, 20 };
  */
 void
 initialize();
+
+bool
+eventLoop();
 
 void
 resetRender( RGB bg_color );
