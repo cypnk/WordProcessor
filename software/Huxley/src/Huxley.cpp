@@ -372,6 +372,45 @@ end( int e ) {
 	exit( e );
 }
 
+/**
+ *  Main event loop
+ */
+bool
+eventLoop() {
+	SDL_Event event;
+	
+	// Get window events
+	while( SDL_PollEvent( &event ) ) {
+		// Check trigger
+		switch( event.type ) {
+			// Window related event
+			case SDL_WINDOWEVENT: {
+				if ( 
+					windowID ==
+					event.window.windowID 
+				) {
+					handleWindowEvents( event );
+				}
+				break;
+			}
+			
+			// Keyboard event
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+			case SDL_TEXTINPUT: {
+				handleKeyEvents( event );
+				break;
+			}
+			
+			// End program
+			case SDL_QUIT: {
+				end( 0 );
+			}
+		}
+	}
+	return true;
+}
+
 int
 main() {
 	// Begin
@@ -379,40 +418,8 @@ main() {
 	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	
 	// Event loop
-	while( 1 ) {
-		SDL_Event event;
-		
-		// Get window events
-		while( SDL_PollEvent( &event ) ) {
-			
-			// Check trigger
-			switch( event.type ) {
-				
-				// Window related event
-				case SDL_WINDOWEVENT: {
-					if ( 
-						windowID ==
-						event.window.windowID 
-					) {
-						handleWindowEvents( event );
-					}
-					break;
-				}
-				
-				// Keyboard event
-				case SDL_KEYDOWN:
-				case SDL_KEYUP:
-				case SDL_TEXTINPUT: {
-					handleKeyEvents( event );
-					break;
-				}
-				
-				// End program
-				case SDL_QUIT: {
-					end( 0 );
-				}
-			}
-		}
+	while( eventLoop() ) {
+		SDL_Delay( LOOP_WAIT );
 	}
 	
 	// Just in case
