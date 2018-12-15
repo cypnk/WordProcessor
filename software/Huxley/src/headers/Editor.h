@@ -1,6 +1,8 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#include <stdio.h>
+#include <vector>
 #include <SDL2/SDL.h>
 
 /**
@@ -96,11 +98,28 @@
 // Insert break
 #define T_BREAK		0x0038
 
+
+/**
+ *  Formatting type
+ */
+#define	F_NORMAL	0x0100;
+#define	F_BOLD		0x0101;
+#define	F_ITALIC	0x0102;
+#define	F_UNDER		0x0103;
+#define	F_SUP		0x0104;
+#define	F_SUB		0x0105;
+
 /**
  *  Helpers
  */
 #define ARRAY_SIZE( a ) \
 	( sizeof( a ) / sizeof( *( a ) ) )
+
+// Columns per screen
+#define COL_SIZE 120
+
+// Lines per page
+#define PG_SIZE	62
 
 /**
  *  Text input
@@ -108,14 +127,14 @@
 extern char* input;
 extern char* composition;
 
-extern Sint32 cursor;
-extern Sint32 selection;
-
 void
 sendCombo( int ctrl, int shift, SDL_Keycode &code );
 
 void
 applyCommand( unsigned char action );
+
+void
+cmdOpen( const char* fname );
 
 
 #endif
