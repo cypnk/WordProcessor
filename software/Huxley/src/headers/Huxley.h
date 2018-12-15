@@ -3,14 +3,20 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <string>
 #include <unordered_map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Editor.h"
 
+#define HUXLEY_VERSION	"0.0.1"
 
-#define HUXLEY_VERSION "0.0.1"
+/**
+ *  Window defaults
+ */
+#define WINDOW_WIDTH	800
+#define WINDOW_HEIGHT	600
+#define WINDOW_TITLE	"Huxley"
+
 
 /**
  *  Special key input states
@@ -30,15 +36,6 @@ SDL_Window	*WINDOW;
 SDL_Renderer	*RENDERER;
 TTF_Font	*FONT;
 SDL_Color	COLOR;
-
-int 
-WINDOW_WIDTH	= 800;
-
-int 
-WINDOW_HEIGHT	= 600;
-
-const char* 
-WINDOW_TITLE	= "Huxley";
 
 Uint32
 WINDOW_FLAGS	= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
@@ -99,6 +96,28 @@ COLORS {
 	RGB pink	{ 240, 98, 146, 1 };
 	RGB red		{ 229, 115, 115, 1 };
 	RGB brown	{ 161, 136, 127, 1 };
+	
+	// Flat UI https://flatuicolors.com/palette/defo
+	RGB turquoise	{ 26, 188, 156, 1 };
+	RGB emarald	{ 46, 204, 113, 1 };
+	RGB peter_river	{ 52, 152, 219, 1 };
+	RGB amethyst	{ 155, 89, 182, 1 };
+	RGB wet_asphalt	{ 52, 73, 94, 1 };
+	RGB green_sea	{ 22, 160, 133, 1 };
+	RGB nephritis	{ 39, 174, 96, 1 };
+	RGB beliz_hole	{ 41, 128, 185, 1 };
+	RGB wisteria	{ 142, 68, 173, 1 };
+	RGB midnight_blue { 44, 62, 80, 1 };
+	RGB sunflower	{ 241, 196, 15, 1 };
+	RGB carrot	{ 230, 126, 34, 1 };
+	RGB alizarin	{ 231, 76, 60, 1 };
+	RGB clouds	{ 236, 240, 241, 1 };
+	RGB concrete	{ 149, 165, 166, 1 };
+	RGB orange	{ 243, 156, 18, 1 };
+	RGB pumpkin	{ 211, 84, 0, 1 };
+	RGB pomegranate { 192, 57, 43, 1 };
+	RGB silver	{ 189, 195, 199, 1 };
+	RGB asbestos	{ 127, 140, 141, 1 };
 } COLORS;
 
 
@@ -128,6 +147,7 @@ CURRENT {
 /**
  *  Cursor
  */
+/*
 float
 CUR_TIMER	= 1.0f;
 
@@ -136,7 +156,7 @@ CUR_BLINK	= 2.0f;
 
 SDL_Rect 
 CURSOR		= { 200, 200, 10, 20 };
-
+*/
 
 /**
  *  Base operations
