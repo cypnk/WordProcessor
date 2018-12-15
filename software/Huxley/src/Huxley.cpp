@@ -384,8 +384,8 @@ eventLoop() {
 		end( 1 );
 	}
 	
-	// Get window events
-	while( SDL_PollEvent( &event ) ) {
+	// Wait for window events
+	if ( SDL_WaitEvent( &event ) != 0 ) {
 		// Check trigger
 		switch( event.type ) {
 			// Window related event
