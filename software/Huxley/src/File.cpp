@@ -1,7 +1,9 @@
-#include "headers/File.h"
+#include "headers/HXFile.h"
+
+HXFile::HXFile() { }
 
 void
-openFile( std::string const fname, HX_FILE& dest ) {
+HXFile::openDoc( std::string const fname, HX_FILE& dest ) {
 	// Setup working file
 	std::ifstream file( fname.c_str() );
 	
@@ -13,21 +15,7 @@ openFile( std::string const fname, HX_FILE& dest ) {
 	std::string line;
 	// Append lines to document block
 	while ( std::getline( file, line ) ) {
-		
-		// TODO: Make this read formatting from the line
-		std::vector<HX_FORMAT> fmt;
-		
-		// Add line formatting
-		fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
-		
-		// Add line with any formatting and its checksum
-		dest.data.push_back( 
-			HX_LINE {
-				std::hash<std::string>{}( line ),
-				line,
-				fmt
-			}
-		);
+		appendDoc( line, dest );
 		line.clear();
 	}
 	
@@ -36,4 +24,22 @@ openFile( std::string const fname, HX_FILE& dest ) {
 		// Error
 		return;
 	}
+}
+
+void
+HXFile::appendDoc( std::string& line, HX_FILE& dest ) {
+	// TODO: Make this read formatting from the line
+	std::vector<HX_FORMAT> fmt;
+	
+	// Add line formatting
+	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
+	
+	// Add line with any formatting and its checksum
+	dest.data.push_back( 
+		HX_LINE {
+			std::hash<std::string>{}( line ),
+			line,
+			fmt
+		}
+	);	
 }
