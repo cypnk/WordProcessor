@@ -1,19 +1,11 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
-
+#include "HXTypes.h"
 #include <SDL2/SDL.h>
 
 /**
- *  Command key format
+ *  Keyboard command mapping
  */
-struct command {
-	SDL_Keycode	code	= SDLK_UNKNOWN;
-	int		ctrl	= 0;
-	int		shift	= 0;
-	int		alt	= 0;  // Not used for now
-	unsigned char	action	= 0x0000;
-	
-};
 
 // https://wiki.libsdl.org/SDLKeycodeLookup
 command QWERTY_MAP[] = {
@@ -110,5 +102,6 @@ command QWERTY_MAP[] = {
 	{ SDLK_y,		1, 1, 0, T_ITALIC },		// 51
 	{ SDLK_s,		1, 1, 0, T_UNDER }		// 52
 };
+
 
 #endif
