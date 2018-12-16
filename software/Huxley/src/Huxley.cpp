@@ -9,8 +9,7 @@
 /**
  *  Setup window with base parameters
  */
-void
-initialize() {
+Huxley::Huxley( const char* title, int width, int height ) {
 	// Start SDL
 	if ( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
 		exit( 1 );
@@ -19,11 +18,11 @@ initialize() {
 	
 	// Generate window
 	WINDOW		= SDL_CreateWindow(
-		WINDOW_TITLE,
+		title,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH,
-		WINDOW_HEIGHT,
+		width,
+		height,
 		WINDOW_FLAGS
 	);
 	
@@ -50,7 +49,7 @@ initialize() {
  *  Startup background
  */
 void
-resetRender( RGB bg_color ) {
+Huxley::resetRender( RGB bg_color ) {
 	// Set background to defaults
 	SDL_SetRenderDrawColor( 
 		RENDERER, 
@@ -66,7 +65,7 @@ resetRender( RGB bg_color ) {
  *  Startup font (probably move to font array for italic, bold etc...)
  */
 void
-setupFont( RGB fg_color ) {
+Huxley::setupFont( RGB fg_color ) {
 	if ( !TTF_WasInit() && TTF_Init() == -1 ) {
 		printf("Error initializing TTF: %s\n", TTF_GetError());
 		end( 1 );
@@ -85,7 +84,7 @@ setupFont( RGB fg_color ) {
  *  Keyboard events
  */
 void
-handleKeyDown( SDL_Event &event ) {
+Huxley::handleKeyDown( SDL_Event &event ) {
 	
 	// Check for special keys
 	switch( event.key.keysym.sym ) {
@@ -136,7 +135,7 @@ handleKeyDown( SDL_Event &event ) {
 
 // Execute edit commands on key up
 void
-handleKeyUp( SDL_Event &event ) {
+Huxley::handleKeyUp( SDL_Event &event ) {
 	
 	// Turn off special keys on key release
 	switch( event.key.keysym.sym ) {
@@ -187,7 +186,7 @@ handleKeyUp( SDL_Event &event ) {
  *  Text input handling. Needs buffer etc...
  */
 void
-handleKeyInput( SDL_Event &event ) {
+Huxley::handleKeyInput( SDL_Event &event ) {
 	if ( ctrl_key.any || alt_key.any ) {
 		return;
 	}
@@ -211,7 +210,7 @@ handleKeyInput( SDL_Event &event ) {
  *  All keyboard events
  */
 void
-handleKeyEvents( SDL_Event &event ) {
+Huxley::handleKeyEvents( SDL_Event &event ) {
 	// Use keycode for simplicity
 	SDL_Keycode code = event.key.keysym.sym;
 	
@@ -308,7 +307,7 @@ handleKeyEvents( SDL_Event &event ) {
  *  Window events
  */
 void
-handleWindowEvents( SDL_Event &event ) {
+Huxley::handleWindowEvents( SDL_Event &event ) {
 	switch( event.window.event ) {
 		
 		// Window has been resized
@@ -357,7 +356,7 @@ handleWindowEvents( SDL_Event &event ) {
  *  Cleanup and end program
  */
 void
-end( int e ) {
+Huxley::end( int e ) {
 	TTF_CloseFont( FONT );
 	TTF_Quit();
 	FONT	= NULL;
@@ -376,7 +375,7 @@ end( int e ) {
  *  Main event loop
  */
 bool
-eventLoop() {
+Huxley::eventLoop() {
 	SDL_Event event;
 	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	if ( !windowID ) {
@@ -419,15 +418,13 @@ eventLoop() {
 int
 main() {
 	// Begin
-	initialize();
+	Huxley hx( WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT );
 	
 	// Event loop
-	while( eventLoop() ) {
+	while( hx.eventLoop() ) {
 		SDL_Delay( LOOP_WAIT );
 	}
 	
 	// Just in case
-	end( 0 );
+	hx.end( 0 );
 }
-
-
