@@ -1,22 +1,29 @@
-#include "headers/Editor.h"
+#include "headers/HXTypes.h"
+#include "headers/HXFile.h"
 #include "headers/Keyboard.h"
+#include "headers/Editor.h"
 
-// TODO: Make this user selectable. Use QWERTY as default for now
-command* KEY_MAP = QWERTY_MAP;
+HXFile document;
+		
+// Current keyboard map
+command* KEY_MAP;
 
-/*
-char* input;
-char* composition;
+Editor::Editor( unsigned char key_map ) {
+	// TODO: Make this user selectable. Use QWERTY as default for now
+	switch( key_map ) {
+		case MAP_QWERTY:
+			KEY_MAP = QWERTY_MAP;
+			break;
+	}
+	document	= HXFile();
+}
 
-Sint32 cursor;
-Sint32 selection;
-*/
 
 /**
  *  Receive command from main window
  */
 void
-sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
+Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
 	static int map_size = ARRAY_SIZE( QWERTY_MAP );
 	
 	// Iterate through key map
@@ -37,7 +44,7 @@ sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
  *  Massive TODO: Text command selector
  */
 void
-applyCommand( unsigned char action ) {
+Editor::applyCommand( unsigned char action ) {
 	switch( action ) {
 		
 		// Basic movement
@@ -183,6 +190,9 @@ applyCommand( unsigned char action ) {
 		}
 		case T_OPEN: {
 			printf( "Open existing document\n" );
+			
+			// Test sample document
+			cmdOpen( "samples/republic-plato.txt" );
 			break;
 		}
 		
@@ -238,6 +248,37 @@ applyCommand( unsigned char action ) {
 			break;
 		}
 
+	}
+}
+
+
+/**
+ * TODO: On the prototype, this will enable CapsLock
+ * since that keyboard won't have the key
+ */
+void
+Editor::capslock() {
+	printf( "Capslock\n" );
+}
+
+/**
+ *  Open document, create lnie checksums
+ */
+void
+Editor::cmdOpen( const char* fname ) {
+	document.openDoc( fname, working_doc );
+	
+	for (
+		std::vector<HX_LINE>::iterator it = 
+			working_doc.data.begin(); 
+		it != working_doc.data.end(); 
+		++it
+	) {
+		printf(
+			"%zx %s\n", 
+			(*it).chk, 
+			(*it).line.c_str()
+		);
 	}
 }
 
