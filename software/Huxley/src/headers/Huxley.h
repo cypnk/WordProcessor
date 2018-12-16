@@ -1,7 +1,6 @@
 #ifndef HUXLEY_H
 #define HUXLEY_H
 
-#include <ctype.h>
 #include <stdio.h>
 #include <unordered_map>
 #include <SDL2/SDL.h>
@@ -17,29 +16,7 @@
 #define WINDOW_HEIGHT	600
 #define WINDOW_TITLE	"Huxley"
 
-
-/**
- *  Special key input states
- */
-struct
-SPECIAL_KEY {
-	int left	= 0;
-	int right	= 0;
-	int any		= 0;
-} ctrl_key, alt_key, shift_key;
-
-
-/**
- *  Main window parameters
- */
-SDL_Window	*WINDOW;
-SDL_Renderer	*RENDERER;
-TTF_Font	*FONT;
-SDL_Color	COLOR;
-
-Uint32
-WINDOW_FLAGS	= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-
+// Main event loop delay
 Uint32
 LOOP_WAIT	= 10;
 
@@ -134,16 +111,6 @@ WINDOW_SMIN	= 1;
 int
 WINDOW_SMAX	= 2;
 
-// Running parameters
-struct
-CURRENT {
-	int	w	= 0;
-	int	h	= 0;
-	int	x	= 0;
-	int	y	= 0;
-	int	win;
-} status;
-
 /**
  *  Cursor
  */
@@ -158,61 +125,75 @@ SDL_Rect
 CURSOR		= { 200, 200, 10, 20 };
 */
 
-/**
- *  Base operations
- */
-void
-initialize();
+class Huxley {
+	private:
+		/**
+		 *  Main window parameters
+		 */
+		SDL_Window	*WINDOW;
+		SDL_Renderer	*RENDERER;
+		TTF_Font	*FONT;
+		SDL_Color	COLOR;
 
-bool
-eventLoop();
+		Uint32 		WINDOW_FLAGS	= 
+					SDL_WINDOW_RESIZABLE |
+					SDL_WINDOW_ALLOW_HIGHDPI;
+		
+		/**
+		 *  Special key input states
+		 */
+		struct
+		SPECIAL_KEY {
+			int left	= 0;
+			int right	= 0;
+			int any		= 0;
+		} ctrl_key, alt_key, shift_key;
+		
+		// Running parameters
+		struct
+		CURRENT {
+			int	w	= 0;
+			int	h	= 0;
+			int	x	= 0;
+			int	y	= 0;
+			int	win;
+		} status;
+		
+		/**
+		 *  Base operations
+		 */
+		void	resetRender( RGB bg_color );
+		void	setupFont( RGB fb_color );
+		
+		/**
+		 *  Window resizing, repositioning, etc...
+		 */
+		void	handleWindowEvents( SDL_Event &event );
 
-void
-resetRender( RGB bg_color );
+		/**
+		 *  Keyboard events
+		 */
+		// Keyboard text input
+		void	handleKeyInput( SDL_Event &event );
 
-void
-setupFont( RGB fb_color );
-
-void
-loadSymbols();
-
-void
-cacheSymbol( const char* c );
-
-void
-end( int e );
-
-
-/**
- *  Base operations
- */
-
-/**
- *  Window resizing, repositioning, etc...
- */
-void
-handleWindowEvents( SDL_Event &event );
-
-
-/**
- *  Keyboard events
- */
-
-// Keyboard text input
-void
-handleKeyInput( SDL_Event &event );
-
-// Key press event
-void
-handleKeyDown( SDL_Event &event );
-
-// Key release event
-void
-handleKeyUp( SDL_Event &event );
-
-// Capture all key events
-void
-handleKeyEvents( SDL_Event &event );
+		// Key press event
+		void	handleKeyDown( SDL_Event &event );
+		
+		// Key release event
+		void	handleKeyUp( SDL_Event &event );
+		
+		// Capture all key events
+		void	handleKeyEvents( SDL_Event &event );
+	
+	public:
+		// Initialize
+		Huxley( const char* title, int width, int height );
+		
+		// Main event loop
+		bool	eventLoop();
+		
+		// Cleanup and end execution
+		void	end( int e );
+};
 
 #endif
-
