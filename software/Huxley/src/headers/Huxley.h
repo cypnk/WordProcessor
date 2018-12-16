@@ -31,14 +31,19 @@ FONT_FILE	= "bin/assets/fonts/NotoSansMono-Regular.ttf";
 //SYMBOL_CACHE;
 
 
-// Color option
-struct
-RGB {
-	Uint8 R	= 0;
-	Uint8 B	= 0;
-	Uint8 G	= 0;
-	Uint8 A	= 1;
-};
+// Size restored (default)
+int
+WINDOW_SRES	= 0;
+
+// Size minimized
+int
+WINDOW_SMIN	= 1;
+
+// Size maximized
+int
+WINDOW_SMAX	= 2;
+
+
 
 // Default colors
 struct
@@ -99,17 +104,6 @@ COLORS {
 
 
 
-// Size restored (default)
-int
-WINDOW_SRES	= 0;
-
-// Size minimized
-int
-WINDOW_SMIN	= 1;
-
-// Size maximized
-int
-WINDOW_SMAX	= 2;
 
 /**
  *  Cursor
@@ -183,14 +177,15 @@ class Huxley {
 		void	handleKeyUp( SDL_Event &event );
 		
 		// Capture all key events
-		void	handleKeyEvents( SDL_Event &event );
+		void
+		handleKeyEvents( SDL_Event &event, Editor &editor );
 	
 	public:
 		// Initialize
 		Huxley( const char* title, int width, int height );
 		
 		// Main event loop
-		bool	eventLoop();
+		bool	eventLoop( Editor &editor );
 		
 		// Cleanup and end execution
 		void	end( int e );
