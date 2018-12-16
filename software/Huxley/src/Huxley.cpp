@@ -210,7 +210,7 @@ Huxley::handleKeyInput( SDL_Event &event ) {
  *  All keyboard events
  */
 void
-Huxley::handleKeyEvents( SDL_Event &event ) {
+Huxley::handleKeyEvents( SDL_Event &event, Editor &editor ) {
 	// Use keycode for simplicity
 	SDL_Keycode code = event.key.keysym.sym;
 	
@@ -225,8 +225,11 @@ Huxley::handleKeyEvents( SDL_Event &event ) {
 				code != SDLK_RSHIFT
 			) {
 				// Handle Ctrl + Shift + Key combo
-				sendCombo( ctrl_key.any, shift_key.any, 
-					code );
+				editor.sendCombo( 
+					ctrl_key.any, 
+					shift_key.any, 
+					code 
+				);
 				return;
 			}
 		// Ctrl already pressed and next key isn't shift
@@ -253,8 +256,11 @@ Huxley::handleKeyEvents( SDL_Event &event ) {
 				
 			} else { 
 				// Handle Ctrl+ Key combo
-				sendCombo( ctrl_key.any, shift_key.any,
-					code );
+				editor.sendCombo( 
+					ctrl_key.any, 
+					shift_key.any,
+					code 
+				);
 				return;
 			}
 			
@@ -268,9 +274,7 @@ Huxley::handleKeyEvents( SDL_Event &event ) {
 		
 		// Both left and right keys were pressed
 		if ( shift_key.left && shift_key.right ) {
-			// TODO: On the prototype, this will enable CapsLock
-			// since that keyboard won't have the key
-			printf( "Capslock\n" );
+			editor.capslock();
 		}
 	}
 	
@@ -299,7 +303,7 @@ Huxley::handleKeyEvents( SDL_Event &event ) {
 		code		== SDLK_TAB		|| 
 		code		== SDLK_DELETE
 	) {
-		sendCombo( ctrl_key.any, shift_key.any, code );
+		editor.sendCombo( ctrl_key.any, shift_key.any, code );
 	}
 }
 
@@ -375,7 +379,7 @@ Huxley::end( int e ) {
  *  Main event loop
  */
 bool
-Huxley::eventLoop() {
+Huxley::eventLoop( Editor &editor ) {
 	SDL_Event event;
 	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	if ( !windowID ) {
@@ -402,7 +406,7 @@ Huxley::eventLoop() {
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 			case SDL_TEXTINPUT: {
-				handleKeyEvents( event );
+				handleKeyEvents( event, editor );
 				break;
 			}
 			
@@ -420,8 +424,11 @@ main() {
 	// Begin
 	Huxley hx( WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT );
 	
+	// TODO: Make this user selectable Default QWERTY
+	Editor editor( MAP_QWERTY );
+	
 	// Event loop
-	while( hx.eventLoop() ) {
+	while( hx.eventLoop( editor ) ) {
 		SDL_Delay( LOOP_WAIT );
 	}
 	
