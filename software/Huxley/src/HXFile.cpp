@@ -3,9 +3,6 @@
 
 #include "headers/HXFile.h"
 
-//int ENDS_WITH( const char* str, const char* suffix );
-
-
 HXFile::HXFile() { }
 
 bool
@@ -47,7 +44,7 @@ HXFile::openHuxleyDoc( const char* fname, HX_FILE& dest ) {
 		return;
 	}
 	
-	
+	// TODO: This needs to be handled very differently
 	std::string line;
 	// Append lines to document block
 	while ( std::getline( file, line ) ) {
