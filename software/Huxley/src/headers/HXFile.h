@@ -4,6 +4,7 @@
 #include <iterator>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 #include "HXTypes.h"
 
 class HXFile {
@@ -11,21 +12,25 @@ class HXFile {
 		void	symbolCache();
 		bool	openFile( std::ifstream &file );
 		
-		void	
-		openTextDoc( const char* name, HX_FILE& dest );
+		void
+		extractLine(
+			std::size_t&	chk,
+			std::string&	line,
+			std::string&	extracted
+		);
 		
-		void	
-		openHuxleyDoc( const char* fname, HX_FILE& dest );
+		void
+		appendDoc(
+			std::string&	line, 
+			HX_FILE& 	dest,
+			unsigned char	ftype
+		);
 		
 	public:
 		HXFile();
 		
 		void
-		openDoc( const char* fname, HX_FILE& dest );
-		
-		void
-		appendDoc( std::string& line, HX_FILE& dest );
-
+		openDoc( std::string& fname, HX_FILE& dest );
 };
 
 #endif
