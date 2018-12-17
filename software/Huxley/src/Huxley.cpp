@@ -1,3 +1,6 @@
+#ifndef HUXLEY_CPP
+#define HUXLEY_CPP
+
 #include "headers/Huxley.h"
 
 /**
@@ -435,3 +438,5 @@ main() {
 	// Just in case
 	hx.end( 0 );
 }
+
+#endif
