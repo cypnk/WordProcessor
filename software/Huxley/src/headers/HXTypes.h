@@ -112,19 +112,19 @@
 /**
  *  Formatting type
  */
-#define	F_NORMAL	0x0100;
-#define	F_BOLD		0x0101;
-#define	F_ITALIC	0x0102;
-#define	F_UNDER		0x0103;
-#define	F_SUP		0x0104;
-#define	F_SUB		0x0105;
+#define	F_NORMAL	0x0100
+#define	F_BOLD		0x0101
+#define	F_ITALIC	0x0102
+#define	F_UNDER		0x0103
+#define	F_SUP		0x0104
+#define	F_SUB		0x0105
 
 /**
  *  File types
  */
-#define	FILE_UNKOWN	0x0000;
-#define	FILE_HUXLEY	0x0001;
-#define FILE_TEXT	0x0002;
+#define	FILE_UNKOWN	0x0000
+#define	FILE_HUXLEY	0x0001
+#define FILE_TEXT	0x0002
 
 
 /**
@@ -155,7 +155,10 @@ inline bool IS_SPACE( const char* c ) {
 }
 
 // https://stackoverflow.com/a/744822
-inline int ENDS_WITH( const char* str, const char* suffix ) {
+inline int ENDS_WITH(
+	const char*	str,
+	const char*	suffix
+) {
 	if ( !str || !suffix ) {
 		return 0;
 	}
@@ -189,16 +192,17 @@ HX_HISTORY {
 // Line formatting
 struct
 HX_FORMAT {
-	int			start	= 0;
+	int			start	= 0;	// Position in line
 	int			end	= 0;
 	unsigned char		type	= 0x0000;
 };
 
 struct
 HX_LINE {
-	std::size_t		chk;
-	std::string		line;
-	std::vector<HX_FORMAT>	format;
+	std::size_t		r_chk;	// Given line checksum in file
+	std::size_t		c_chk;	// Checksum of the actual line
+	std::string		line;	// Line content
+	std::vector<HX_FORMAT>	format;	// Text formatting
 };
 
 struct
