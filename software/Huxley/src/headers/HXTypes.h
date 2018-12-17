@@ -1,10 +1,11 @@
-#ifndef FILE_H
-#define FILE_H
+#ifndef HXTYPES_H
+#define HXTYPES_H
 
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
 
+// Some ideas to explore:
 // https://stackoverflow.com/questions/8365013/reading-line-from-text-file-and-putting-the-strings-into-a-vector
 
 
@@ -12,7 +13,6 @@
  *  Keyboard map type
  */
 #define	MAP_QWERTY	0x0000	// Only QWERTY for now
-
 
 
 /**
@@ -120,6 +120,14 @@
 #define	F_SUB		0x0105;
 
 /**
+ *  File types
+ */
+#define	FILE_UNKOWN	0x0000;
+#define	FILE_HUXLEY	0x0001;
+#define FILE_TEXT	0x0002;
+
+
+/**
  *  Helpers
  */
 #define ARRAY_SIZE( a ) \
@@ -133,6 +141,35 @@
 
 // End markers
 #define END_MKR		"~!$%,.;*?()[]{}+-=/。"
+
+// Idea borrowed from Salvatore Sanfilippo's ( antirez ) Kilo editor
+// https://github.com/antirez/kilo
+inline bool IS_BREAK( int c ) {
+	return
+	c == '\0' || isspace( c ) || strchr( END_MKR, c ) != NULL;
+}
+
+// Word separator ( for languages that use spaces )
+inline bool IS_SPACE( const char* c ) {
+	return strchr( c, ' ' ) != NULL;
+}
+
+// https://stackoverflow.com/a/744822
+inline int ENDS_WITH( const char* str, const char* suffix ) {
+	if ( !str || !suffix ) {
+		return 0;
+	}
+	
+	std::size_t len_str	= strlen( str );
+	std::size_t len_sfx	= strlen( suffix );
+	
+	if ( len_sfx > len_str ) {
+		return 0;
+	}
+	
+	return 
+	strncmp( str + len_str - len_sfx, suffix, len_sfx ) == 0;
+}
 
 // Cursor position on document (not on screen)
 struct
