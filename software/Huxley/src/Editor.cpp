@@ -189,7 +189,8 @@ Editor::applyCommand( unsigned char action ) {
 			printf( "Open existing document\n" );
 			
 			// Test sample document
-			cmdOpen( "samples/republic-plato.txt" );
+			std::string fname = "samples/republic-plato.txt";
+			cmdOpen( fname );
 			break;
 		}
 		
@@ -262,7 +263,7 @@ Editor::capslock() {
  *  Open document, create lnie checksums
  */
 void
-Editor::cmdOpen( const char* fname ) {
+Editor::cmdOpen( std::string& fname ) {
 	HXFile document;
 	document.openDoc( fname, working_doc );
 	
@@ -273,8 +274,9 @@ Editor::cmdOpen( const char* fname ) {
 		++it
 	) {
 		printf(
-			"%zx %s\n", 
-			(*it).chk, 
+			"%zx %zx %s\n", 
+			(*it).r_chk, 
+			(*it).c_chk, 
 			(*it).line.c_str()
 		);
 	}
