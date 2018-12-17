@@ -1,12 +1,10 @@
+#ifndef EDITOR_CPP
+#define EDITOR_CPP
+
 #include "headers/HXTypes.h"
 #include "headers/HXFile.h"
 #include "headers/Keyboard.h"
 #include "headers/Editor.h"
-
-HXFile document;
-		
-// Current keyboard map
-command* KEY_MAP;
 
 Editor::Editor( unsigned char key_map ) {
 	// TODO: Make this user selectable. Use QWERTY as default for now
@@ -15,9 +13,8 @@ Editor::Editor( unsigned char key_map ) {
 			KEY_MAP = QWERTY_MAP;
 			break;
 	}
-	document	= HXFile();
+	
 }
-
 
 /**
  *  Receive command from main window
@@ -266,6 +263,7 @@ Editor::capslock() {
  */
 void
 Editor::cmdOpen( const char* fname ) {
+	HXFile document;
 	document.openDoc( fname, working_doc );
 	
 	for (
@@ -282,3 +280,4 @@ Editor::cmdOpen( const char* fname ) {
 	}
 }
 
+#endif
