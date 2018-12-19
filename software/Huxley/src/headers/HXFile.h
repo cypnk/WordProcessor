@@ -9,12 +9,27 @@
 
 class HXFile {
 	private:
-		void	symbolCache();
+		// Convert from raw string to format stack
+		void
+		extractFormat(
+			std::string&	block,
+			std::vector<HX_FORMAT>& fmt 
+		);
+		
+		// Convert from raw string to document line
 		void
 		extractLine(
 			std::size_t&	chk,
 			std::string&	line,
-			std::string&	extracted
+			std::string&	extracted,
+			std::vector<HX_FORMAT>& fmt
+		);
+		
+		// Convert from format stack to string
+		void
+		saveFormat(
+			std::string&	block,
+			std::vector<HX_FORMAT>& fmt 
 		);
 		
 		void
