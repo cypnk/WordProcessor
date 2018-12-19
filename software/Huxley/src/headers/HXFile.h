@@ -10,8 +10,6 @@
 class HXFile {
 	private:
 		void	symbolCache();
-		bool	openFile( std::ifstream &file );
-		
 		void
 		extractLine(
 			std::size_t&	chk,
@@ -31,6 +29,9 @@ class HXFile {
 		
 		void
 		openDoc( std::string& fname, HX_FILE& dest );
+		
+		void
+		saveDoc( std::string& fname, HX_FILE& source );
 };
 
 #endif
