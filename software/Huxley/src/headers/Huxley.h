@@ -169,8 +169,10 @@ class Huxley {
 		/**
 		 *  Keyboard events
 		 */
+		
 		// Keyboard text input
-		void	handleKeyInput( SDL_Event &event );
+		void
+		handleKeyInput( SDL_Event &event, Editor &editor );
 
 		// Key press event
 		void	handleKeyDown( SDL_Event &event );
