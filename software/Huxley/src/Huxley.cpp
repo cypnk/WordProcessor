@@ -209,7 +209,6 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 		return;
 	}
 	
-	
 	// TODO: Handle buffer input E.G. AltGr
 	if ( event.type == SDL_TEXTINPUT  ) {
 		// Capture text input
@@ -407,6 +406,7 @@ Huxley::end( int e ) {
 	// Do something with these (maybe profile settings?)
 	printf( "Last window size %d x %d\n", status.w, status.h );
 	printf( "Last window position %d, %d\n", status.x, status.y );
+	
 	exit( e );
 }
 
@@ -447,10 +447,12 @@ Huxley::eventLoop( Editor &editor ) {
 			
 			// End program
 			case SDL_QUIT: {
-				end( 0 );
+				// Exit event loop
+				return false;
 			}
 		}
 	}
+	
 	return true;
 }
 
@@ -466,8 +468,8 @@ main() {
 	while( hx.eventLoop( editor ) ) {
 		SDL_Delay( LOOP_WAIT );
 	}
-	
-	// Just in case
+		
+	// End
 	hx.end( 0 );
 }
 
