@@ -155,9 +155,23 @@
  *  Line checksum helpers
  */
 
+// Checksum primes
+#define	CHK_A		81667
+#define	CHK_B		83311
+#define	CHK_C		90173
+
 // Generate checksum from string
+// https://stackoverflow.com/questions/8317508/hash-function-for-a-string
 inline std::size_t TO_CHK( std::string& line ) {
-	return std::hash<std::string>{}( line );
+	// return std::hash<std::string>{}( line );
+	// Alternative with smaller hash size
+	std::size_t chk	= 0;
+	const char* str		= line.c_str();
+	while( *str ) {
+		chk = ( chk * CHK_A ) ^ ( str[0] * CHK_B );
+		str++;
+	}
+	return chk % CHK_C;
 }
 
 // Copy from string to checksum size_t
