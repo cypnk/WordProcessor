@@ -5,15 +5,6 @@
 
 HXFile::HXFile() { }
 
-bool
-HXFile::openFile( std::ifstream &file ) {
-	if( file.is_open() && file.good() ) {
-		return true;
-	}
-	
-	return false;
-}
-
 void
 HXFile::extractLine(
 	std::size_t&	chk,
@@ -44,13 +35,38 @@ HXFile::extractLine(
 	}
 }
 
+
+void
+HXFile::saveDoc( std::string& fname, HX_FILE&source ) {
+	std::ofstream file( fname.c_str() );
+	if ( !file.is_open() || !file.good() ) {
+		return;
+	}
+	
+	// Checksum placeholder (slightly over-provisioned)
+	char check[25];	
+	for (
+		std::vector<HX_LINE>::iterator it = 
+			source.data.begin(); 
+		it != source.data.end(); 
+		++it
+	) {
+		snprintf( check, 25, "%zx ", (*it).chk );
+		
+		// TODO: Append formatting data
+		file << check << (*it).line.c_str() << "\n";
+	}
+	
+	file.close();
+}
+
 void
 HXFile::openDoc( std::string& fname, HX_FILE& dest ) {
 	const char* fcmp	= fname.c_str();
 	
 	// Setup working file
 	std::ifstream file( fcmp );
-	if ( !openFile( file ) ) {
+	if ( !file.is_open() || !file.good() ) {
 		return;
 	}
 	
@@ -67,6 +83,7 @@ HXFile::openDoc( std::string& fname, HX_FILE& dest ) {
 		// Append Huxley line to document block
 		while ( std::getline( file, line ) ) {
 			appendDoc( line, dest, FILE_HUXLEY );
+			line.clear();
 		}
 	} else {
 		// Shouldn't handle yet
@@ -105,10 +122,10 @@ HXFile::appendDoc(
 			fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
 			
 			// Add line with any formatting
-			// including given and calculated checksum
+			// and if given and calculated checksums match
 			dest.data.push_back( HX_LINE {
 				chk,
-				std::hash<std::string>{}( extracted ),
+				chk == std::hash<std::string>{}( extracted ),
 				extracted, 
 				fmt
 			} );
@@ -124,7 +141,7 @@ HXFile::appendDoc(
 			
 			// Add line
 			dest.data.push_back( HX_LINE { 
-					chk, chk, line, fmt 
+					chk, true, line, fmt 
 			} );
 			break;
 		}
