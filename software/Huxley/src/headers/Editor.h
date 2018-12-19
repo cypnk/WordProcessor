@@ -28,8 +28,11 @@ class Editor {
 		// Keyboard input
 		std::vector<HX_HISTORY> content;
 		
-		//	Open a given filename as a Huxley document
-		void cmdOpen( const char* fname );
+		// Open a given filename as a Huxley document
+		void cmdOpen( std::string& fname );
+		
+		// Save working doument to filename
+		void cmdSave( std::string& fname );
 		
 	public:
 		Editor( unsigned char key_map );
