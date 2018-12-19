@@ -108,6 +108,10 @@
 // Insert break
 #define T_BREAK		0x0038
 
+// Delete to start/end of line
+#define	E_DELSL		0x0039
+#define	E_DELEL		0x0040
+
 
 /**
  *  Formatting type
@@ -199,8 +203,8 @@ HX_FORMAT {
 
 struct
 HX_LINE {
-	std::size_t		r_chk;	// Given line checksum in file
-	std::size_t		c_chk;	// Checksum of the actual line
+	std::size_t		chk;	// Given line checksum in file
+	bool			good;	// Checksum matches calculated
 	std::string		line;	// Line content
 	std::vector<HX_FORMAT>	format;	// Text formatting
 };
