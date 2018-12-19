@@ -204,9 +204,9 @@ HX_LINE {
 // Keyboard input (smallest affected text segment)
 struct
 HX_ACTION {
-	int			ln_start	= 0;
-	int			ln_end		= 0;
-	std::string		text		= "";
+	Sint32			start	= 0;
+	Sint32			length	= 0;
+	std::string		text	= "";
 	std::vector<HX_FORMAT>	format;
 };
 
