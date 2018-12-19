@@ -22,42 +22,46 @@ Editor::Editor( unsigned char key_map ) {
 }
 
 /**
+ *  Line index constraints
+ */
+void
+Editor::workingLimit( std::size_t& index ) {
+	std::size_t sz	= working_doc.data.size();
+	
+	if ( index >= sz ) {
+		index	= ( sz == 0 ) ? 0 : sz - 1;
+	}
+}
+
+/**
  *  Add to history
  */
 void
 Editor::syncInput( bool line ) {
 	std::size_t lsize	= working_str.length();
 	
-	// A new line? Format sync history
+	// TODO: Compile formatting for this line
 	std::vector<HX_FORMAT> fmt;
+	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
 	
+	// TODO: Format sync history if new line
 	if ( line ) {
+		workingLimit( working_line );
 		++working_line;
 	}
-	
-	//	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
-	//} else {
-		// Only apply formatting if content exists
-		if ( lsize > 0 ) {
-			fmt.push_back( HX_FORMAT{ 0, lsize, 0x0000 } );
-		} else {
-			fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
-		}
-	//}
 	
 	// Calculate current working string checksum
 	std::size_t chk	= TO_CHK( working_str );
 	
 	// New line?
-	if ( working_line > working_doc.data.size() ) {
+	if ( working_line >= working_doc.data.size() ) {
 		working_doc.data.push_back( HX_LINE {
 			chk, 
 			true, 
-			working_doc.data.size(), 
+			working_line, 
 			working_str, 
 			fmt
 		} );
-		working_line = working_doc.data.size();
 		
 	// Edited line
 	} else {
@@ -85,7 +89,6 @@ Editor::syncInput( bool line ) {
  *  Receive keyboard input fron main window
  *  Sync to working string
  */
-// Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 void
 Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 	
@@ -355,6 +358,31 @@ Editor::applyCommand( unsigned char action ) {
 	syncInput( line );
 }
 
+// https://stackoverflow.com/questions/236129/how-do-i-iterate-over-the-words-of-a-string
+void
+Editor::splitLine( 
+	std::string& line,
+	std::vector<std::string>& words 
+) {
+	std::string	delims	= END_MKR;
+	std::size_t	end	= 0;
+	
+	// First non-breaking block
+	std::size_t	start	= 
+	line.find_first_not_of( delims );
+	
+	while( 
+		( end = line.find_first_of( delims, start ) )
+		!= std::string::npos 
+	) {
+		words.push_back( line.substr( start, end - start ) );
+		start	= line.find_first_not_of( delims, end );
+	}
+	
+	if ( start != std::string::npos ) {
+		words.push_back( line.substr( start ) );
+	}
+}
 
 /**
  * TODO: On the prototype, this will enable CapsLock
@@ -362,7 +390,24 @@ Editor::applyCommand( unsigned char action ) {
  */
 void
 Editor::capslock() {
-	printf( "Capslock\n" );
+	if ( caps ) {
+		caps = false;
+		printf( "Capslock Off \n" );
+		SDL_SetModState( KMOD_NONE );
+		return;
+	}
+	caps = true;
+	printf( "Capslock On \n" );
+	SDL_SetModState( KMOD_CAPS );
+}
+
+/**
+ *  Get line at given index (or last/first line)
+ */
+void
+Editor::lineAt( std::size_t& index, HX_LINE& line ) {
+	workingLimit( index );
+	line = working_doc.data.at( index );
 }
 
 /**
@@ -372,20 +417,6 @@ void
 Editor::cmdOpen( std::string &fname ) {
 	HXFile document;
 	document.openDoc( fname, working_doc );
-	
-	for (
-		std::vector<HX_LINE>::iterator lt = 
-			working_doc.data.begin(); 
-		lt != working_doc.data.end(); 
-		++lt
-	) {
-		printf(
-			"%zx %d %s\n", 
-			(*lt).chk, 
-			(*lt).good, 
-			(*lt).line.c_str()
-		);
-	}
 	
 	// Check integrity
 	if ( document.good ) {
