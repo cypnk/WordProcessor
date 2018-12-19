@@ -32,7 +32,7 @@ Editor::syncInput( bool line ) {
 	std::vector<HX_FORMAT> fmt;
 	
 	if ( line ) {
-		working_line++;
+		++working_line;
 	}
 	
 	//	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
@@ -65,7 +65,7 @@ Editor::syncInput( bool line ) {
 		HX_LINE {
 			chk, 
 			true, 
-			working_doc.data.size(), 
+			working_line, 
 			working_str, 
 			fmt
 		};
@@ -374,17 +374,32 @@ Editor::cmdOpen( std::string &fname ) {
 	document.openDoc( fname, working_doc );
 	
 	for (
-		std::vector<HX_LINE>::iterator it = 
+		std::vector<HX_LINE>::iterator lt = 
 			working_doc.data.begin(); 
-		it != working_doc.data.end(); 
-		++it
+		lt != working_doc.data.end(); 
+		++lt
 	) {
 		printf(
 			"%zx %d %s\n", 
-			(*it).chk, 
-			(*it).good, 
-			(*it).line.c_str()
+			(*lt).chk, 
+			(*lt).good, 
+			(*lt).line.c_str()
 		);
+	}
+	
+	// Check integrity
+	if ( document.good ) {
+		printf( "Integrity check passed" );
+	} else {
+		printf( "Integrity check failed on line(s): " );
+		for (
+			std::vector<std::size_t>::iterator bt = 
+				document.bad_lines.begin(); 
+			bt != document.bad_lines.end();
+			++bt
+		) {
+			printf( "%zu ", ( *bt ) );
+		}
 	}
 }
 
