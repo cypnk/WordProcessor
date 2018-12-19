@@ -60,7 +60,7 @@ command QWERTY_MAP[] = {
 	{ SDLK_q,		1, 0, 0, T_QUERY },		// 29
 	
 	// Editing
-	{ SDLK_DELETE,		0, 0, 0, E_DELL },		// 30
+	{ SDLK_DELETE,		0, 0, 0, E_DELR },		// 30
 	{ SDLK_g,		1, 0, 0, E_DELL },		// 31
 	{ SDLK_h,		1, 0, 0, E_DELR },		// 32
 	
@@ -100,7 +100,18 @@ command QWERTY_MAP[] = {
 	{ SDLK_v,		1, 1, 0, T_SUB },		// 49
 	{ SDLK_b,		1, 1, 0, T_BOLD },		// 50
 	{ SDLK_y,		1, 1, 0, T_ITALIC },		// 51
-	{ SDLK_s,		1, 1, 0, T_UNDER }		// 52
+	{ SDLK_s,		1, 1, 0, T_UNDER },		// 52
+	
+	// Text deletion
+	{ SDLK_BACKSPACE,	0, 0, 0, E_DELL },		// 53
+	
+	// Delete to start/end of line
+	{ SDLK_BACKSPACE,	1, 0, 0, E_DELSL },		// 54
+	{ SDLK_BACKSPACE,	1, 1, 0, E_DELEL },		// 55
+	
+	// Insert line break
+	{ SDLK_RETURN,		0, 0, 0, T_BREAK },		// 56
+	{ SDLK_RETURN,		1, 1, 0, E_BREAK }		// 57
 };
 
 
