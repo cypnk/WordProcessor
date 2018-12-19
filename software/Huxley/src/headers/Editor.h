@@ -22,16 +22,27 @@ class Editor {
 		// Current working input
 		std::string working_str;
 		
+		bool caps				= false;
+		
 		// Last cusror position
 		std::vector<HX_CURSOR> cur_history;
 		
 		// Keyboard input
 		std::vector<HX_HISTORY> content;
 		
+		// Split a line by tokens
+		void
+		splitLine( 
+			std::string& line, 
+			std::vector<std::string>& words 
+		);
+		
+		// Document working limits
+		void	workingLimit( std::size_t& index );
+		
 		/**
 		 *  Flags
 		 */
-		
 		// Unicode text input active
 		bool	INPUT_ACTIVE	= false;
 		
@@ -51,6 +62,9 @@ class Editor {
 		
 		// Add last input phrase to history
 		void	syncInput( bool line = false );
+		
+		// Get the line at given index
+		void	lineAt( std::size_t& index, HX_LINE& line );
 		
 		// Receive keyboard input
 		void
