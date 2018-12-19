@@ -8,7 +8,7 @@
  */
 
 // https://wiki.libsdl.org/SDLKeycodeLookup
-command QWERTY_MAP[] = {
+HX_COMMAND QWERTY_MAP[] = {
 	{ SDLK_UP,		0, 0, 0, M_UP },		// 1
 	{ SDLK_e,		1, 0, 0, M_UP },		// 2
 	
