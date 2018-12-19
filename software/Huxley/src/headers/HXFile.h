@@ -21,11 +21,16 @@ class HXFile {
 		appendDoc(
 			std::string&	line, 
 			HX_FILE& 	dest,
+			std::size_t	index,
 			unsigned char	ftype
 		);
 		
 	public:
 		HXFile();
+		std::vector<std::size_t> bad_lines;
+		
+		// Checksum passed
+		bool			good	= true;
 		
 		void
 		openDoc( std::string& fname, HX_FILE& dest );
