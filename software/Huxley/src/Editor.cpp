@@ -19,16 +19,66 @@ Editor::Editor( unsigned char key_map ) {
 			KEY_MAP = QWERTY_MAP;
 			break;
 	}
-	
 }
 
 /**
  *  Add to history
  */
 void
-Editor::syncInput() {
-	// Clear working string after history add
-	working_str.clear();
+Editor::syncInput( bool line ) {
+	std::size_t lsize	= working_str.length();
+	
+	// A new line? Format sync history
+	std::vector<HX_FORMAT> fmt;
+	
+	if ( line ) {
+		working_line++;
+	}
+	
+	//	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
+	//} else {
+		// Only apply formatting if content exists
+		if ( lsize > 0 ) {
+			fmt.push_back( HX_FORMAT{ 0, lsize, 0x0000 } );
+		} else {
+			fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
+		}
+	//}
+	
+	// Calculate current working string checksum
+	std::size_t chk	= TO_CHK( working_str );
+	
+	// New line?
+	if ( working_line > working_doc.data.size() ) {
+		working_doc.data.push_back( HX_LINE {
+			chk, 
+			true, 
+			working_doc.data.size(), 
+			working_str, 
+			fmt
+		} );
+		working_line = working_doc.data.size();
+		
+	// Edited line
+	} else {
+		working_doc.data.at( working_line ) = 
+		HX_LINE {
+			chk, 
+			true, 
+			working_doc.data.size(), 
+			working_str, 
+			fmt
+		};
+	}
+	
+	printf( "Line: %zx\n", working_line );
+	
+	if ( lsize > 0 ) {
+		printf( "%s", working_str.c_str() );
+		
+		// Clear after sync
+		working_str.clear();
+	}
 }
 
 /**
@@ -42,10 +92,11 @@ Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 	// TODO: Grab the cursor, selection, and update composition
 	if ( cursor > 0 || len > 0 ) {
 		// TODO: Display Unicode input box
+		INPUT_ACTIVE = true;
 		
 	} else {
+		INPUT_ACTIVE = false;
 		working_str.append( edit );
-		printf( "%s\n", working_str.c_str() );
 	}
 }
 
@@ -75,6 +126,8 @@ Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
  */
 void
 Editor::applyCommand( unsigned char action ) {
+	bool line = false;
+	
 	switch( action ) {
 		
 		// Basic movement
@@ -188,6 +241,7 @@ Editor::applyCommand( unsigned char action ) {
 		// Insert line break
 		case T_BREAK: {
 			printf( "Insert break\n" );
+			line = true;
 			break;
 		}
 		// Insert page break
@@ -295,8 +349,10 @@ Editor::applyCommand( unsigned char action ) {
 			printf( "Open clipboard\n" );
 			break;
 		}
-
 	}
+	
+	// Sync before continuing after a command
+	syncInput( line );
 }
 
 
