@@ -185,14 +185,6 @@ HX_CURSOR {
 	int		line;
 };
 
-// Key press history
-struct
-HX_HISTORY {
-	int		column	= 0;
-	int		line	= 0;
-	const char*	input;
-};
-
 // Line formatting
 struct
 HX_FORMAT {
@@ -209,16 +201,36 @@ HX_LINE {
 	std::vector<HX_FORMAT>	format;	// Text formatting
 };
 
+// Keyboard input (smallest affected text segment)
+struct
+HX_ACTION {
+	int			ln_start	= 0;
+	int			ln_end		= 0;
+	std::string		text		= "";
+	std::vector<HX_FORMAT>	format;
+};
+
+// A complete line synced to the file
 struct
 HX_FILE {
 	std::size_t		chk;
 	std::vector<HX_LINE>	data;
 };
 
+// Undo/Redo history
+struct
+HX_HISTORY {
+	HX_ACTION	do_cmd;
+	HX_ACTION	undo_cmd;
+	bool		saved		= false;
+};
+
+
 /**
  *  Command key format
  */
-struct command {
+struct
+HX_COMMAND {
 	SDL_Keycode	code	= SDLK_UNKNOWN;
 	int		ctrl	= 0;
 	int		shift	= 0;
