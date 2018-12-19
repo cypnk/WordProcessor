@@ -6,7 +6,13 @@
 #include "headers/Keyboard.h"
 #include "headers/Editor.h"
 
+/**
+ *  Initialize editor
+ */
 Editor::Editor( unsigned char key_map ) {
+	// Fresh working string
+	working_str	= "";
+	
 	// TODO: Make this user selectable. Use QWERTY as default for now
 	switch( key_map ) {
 		case MAP_QWERTY:
@@ -14,6 +20,33 @@ Editor::Editor( unsigned char key_map ) {
 			break;
 	}
 	
+}
+
+/**
+ *  Add to history
+ */
+void
+Editor::syncInput() {
+	// Clear working string after history add
+	working_str.clear();
+}
+
+/**
+ *  Receive keyboard input fron main window
+ *  Sync to working string
+ */
+// Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
+void
+Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
+	
+	// TODO: Grab the cursor, selection, and update composition
+	if ( cursor > 0 || len > 0 ) {
+		// TODO: Display Unicode input box
+		
+	} else {
+		working_str.append( edit );
+		printf( "%s\n", working_str.c_str() );
+	}
 }
 
 /**
@@ -280,7 +313,7 @@ Editor::capslock() {
  *  Open document, create lnie checksums
  */
 void
-Editor::cmdOpen( std::string& fname ) {
+Editor::cmdOpen( std::string &fname ) {
 	HXFile document;
 	document.openDoc( fname, working_doc );
 	
