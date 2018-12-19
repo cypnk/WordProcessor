@@ -71,7 +71,7 @@ HX_COMMAND QWERTY_MAP[] = {
 	{ SDLK_v,		1, 0, 0, C_CLIP },		// 35
 	
 	// Insert line break
-	{ SDLK_b,		1, 0, 0, E_BREAK },		// 36
+	{ SDLK_b,		1, 0, 0, T_BREAK },		// 36
 	
 	// Copy paste
 	{ SDLK_LEFTBRACKET, 	1, 0, 0, C_COPY },		// 37
@@ -111,7 +111,10 @@ HX_COMMAND QWERTY_MAP[] = {
 	
 	// Insert line break
 	{ SDLK_RETURN,		0, 0, 0, T_BREAK },		// 56
-	{ SDLK_RETURN,		1, 1, 0, E_BREAK }		// 57
+	
+	// Insert page break
+	{ SDLK_RETURN,		1, 1, 0, E_BREAK },		// 57
+	{ SDLK_b,		1, 1, 0, E_BREAK }		// 58
 };
 
 
