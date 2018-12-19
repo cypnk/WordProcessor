@@ -131,7 +131,7 @@ Editor::applyCommand( unsigned char action ) {
 			printf( "Delete right of cursor\n" );
 			break;
 		}
-
+		
 		// Delete current word/line
 		case E_DELWD: {
 			printf( "Delete word\n" );
@@ -142,9 +142,24 @@ Editor::applyCommand( unsigned char action ) {
 			break;
 		}
 		
+		// Delete to start/end of line
+		case E_DELSL: {
+			printf( "Delete to start of this line\n" );
+			break;
+		}
+		case E_DELEL: {
+			printf( "Delete to end of this line\n" );
+			break;
+		}
+		
+		// Insert line break
+		case T_BREAK: {
+			printf( "Insert break\n" );
+			break;
+		}
 		// Insert page break
 		case E_BREAK: {
-			printf( "Insert break\n" );
+			printf( "Insert page break\n" );
 			break;
 		}
 		
@@ -189,8 +204,10 @@ Editor::applyCommand( unsigned char action ) {
 			printf( "Open existing document\n" );
 			
 			// Test sample document
-			std::string fname = "samples/republic-plato.txt";
-			cmdOpen( fname );
+			std::string oname = "samples/republic-plato.txt";
+			//std::string sname = "samples/sample.hx";
+			cmdOpen( oname );
+			//cmdSave( sname );
 			break;
 		}
 		
@@ -274,12 +291,18 @@ Editor::cmdOpen( std::string& fname ) {
 		++it
 	) {
 		printf(
-			"%zx %zx %s\n", 
-			(*it).r_chk, 
-			(*it).c_chk, 
+			"%zx %d %s\n", 
+			(*it).chk, 
+			(*it).good, 
 			(*it).line.c_str()
 		);
 	}
+}
+
+void
+Editor::cmdSave( std::string& fname ) {
+	HXFile document;
+	document.saveDoc( fname, working_doc );
 }
 
 #endif
