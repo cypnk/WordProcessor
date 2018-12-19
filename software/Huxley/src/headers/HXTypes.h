@@ -146,6 +146,36 @@
 // End markers
 #define END_MKR		"~!$%,.;*?()[]{}+-=/。"
 
+// Checksum format
+#define CHK_FORMAT	"%zx"
+
+#define CHK_SIZE	20
+
+/**
+ *  Line checksum helpers
+ */
+
+// Generate checksum from string
+inline std::size_t TO_CHK( std::string& line ) {
+	return std::hash<std::string>{}( line );
+}
+
+// Copy from string to checksum size_t
+inline void FROM_CHK( std::string& block, std::size_t& chk ) {
+	char tmp[CHK_SIZE]; // Extract from raw input
+	snprintf( tmp, CHK_SIZE, "%s", block.c_str() );
+	
+	std::sscanf( tmp, CHK_FORMAT, &chk );
+}
+
+// Copy checksum to char array
+inline void COPY_CHK( char* check, std::size_t& chk ) {
+	snprintf( check, CHK_SIZE, CHK_FORMAT, chk );	
+}
+
+/**
+ *  Content detection
+ */
 // Idea borrowed from Salvatore Sanfilippo's ( antirez ) Kilo editor
 // https://github.com/antirez/kilo
 inline bool IS_BREAK( int c ) {
@@ -181,15 +211,23 @@ inline int ENDS_WITH(
 // Cursor position on document (not on screen)
 struct
 HX_CURSOR {
-	int		column;
-	int		line;
+	Sint32			column;
+	Sint32			line;
+};
+
+// Selected text
+struct
+HX_SELECTION {
+	Sint32			start	= 0;	// Location from cursor
+	Sint32			length	= 0;	// Selection length
+	std::string		data;		// Selected text
 };
 
 // Line formatting
 struct
 HX_FORMAT {
-	int			start	= 0;	// Position in line
-	int			end	= 0;
+	Sint32			start	= 0;	// Position in line
+	std::size_t		length	= 0;	// Apply length
 	unsigned char		type	= 0x0000;
 };
 
@@ -197,6 +235,7 @@ struct
 HX_LINE {
 	std::size_t		chk;	// Given line checksum in file
 	bool			good;	// Checksum matches calculated
+	std::size_t		index;	// Position in document
 	std::string		line;	// Line content
 	std::vector<HX_FORMAT>	format;	// Text formatting
 };
