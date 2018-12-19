@@ -19,7 +19,7 @@ HXFile::extractLine(
 		// Checksum
 		if ( i == 0 ) {
 			// Copy checksum
-			std::sscanf( block.c_str(), "%zx", &chk );
+			FROM_CHK( block, chk );
 		
 		// TODO: Extract formatting
 		//} else if ( i == 1 ) {
@@ -44,17 +44,17 @@ HXFile::saveDoc( std::string& fname, HX_FILE&source ) {
 	}
 	
 	// Checksum placeholder (slightly over-provisioned)
-	char check[25];	
+	char check[CHK_SIZE];	
 	for (
 		std::vector<HX_LINE>::iterator it = 
 			source.data.begin(); 
 		it != source.data.end(); 
 		++it
 	) {
-		snprintf( check, 25, "%zx ", (*it).chk );
+		COPY_CHK( check, (*it).chk );
 		
 		// TODO: Append formatting data
-		file << check << (*it).line.c_str() << "\n";
+		file << check << " " << (*it).line.c_str() << "\n";
 	}
 	
 	file.close();
@@ -110,6 +110,8 @@ HXFile::appendDoc(
 	// TODO: Make this read formatting from the line
 	std::vector<HX_FORMAT>	fmt;
 	std::size_t		chk;
+	std::size_t		sz 	= dest.data.size();
+	
 	
 	switch( ftype ) {
 		case FILE_HUXLEY: {
@@ -125,7 +127,8 @@ HXFile::appendDoc(
 			// and if given and calculated checksums match
 			dest.data.push_back( HX_LINE {
 				chk,
-				chk == std::hash<std::string>{}( extracted ),
+				chk == TO_CHK( extracted ),
+				sz,
 				extracted, 
 				fmt
 			} );
@@ -134,14 +137,14 @@ HXFile::appendDoc(
 		
 		default: {
 			// Fresh checksum
-			chk	= std::hash<std::string>{}( line );
+			chk	= TO_CHK( line );
 			
 			// Empty formatting
 			fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
 			
 			// Add line
 			dest.data.push_back( HX_LINE { 
-					chk, true, line, fmt 
+				chk, true, sz, line, fmt 
 			} );
 			break;
 		}
