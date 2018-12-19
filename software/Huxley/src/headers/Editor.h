@@ -17,7 +17,7 @@ class Editor {
 	private:
 	
 		// Current keyboard map
-		command *KEY_MAP;
+		HX_COMMAND *KEY_MAP;
 		
 		// Current working document
 		HX_FILE	working_doc;
