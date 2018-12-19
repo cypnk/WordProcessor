@@ -44,8 +44,14 @@ Huxley::Huxley( const char* title, int width, int height ) {
 	RENDERER	= SDL_CreateRenderer( WINDOW, -1, 0 );
 	
 	// Set program defaults ( paper background, coal foreground )
-	resetRender( COLORS.paper );
+	BACKGROUND	= COLORS.paper;
 	setupFont( COLORS.coal );
+	
+	// Start text input
+	SDL_StartTextInput();
+	
+	// Render window background
+	refresh();
 }
 
 /**
@@ -65,6 +71,15 @@ Huxley::resetRender( RGB bg_color ) {
 }
 
 /**
+ *  Redraw and refresh
+ */
+void
+Huxley::refresh() {
+	resetRender( BACKGROUND );
+	SDL_UpdateWindowSurface( WINDOW );
+}
+
+/**
  *  Startup font (probably move to font array for italic, bold etc...)
  */
 void
@@ -80,7 +95,7 @@ Huxley::setupFont( RGB fg_color ) {
 		end( 1 );
 	}
 	
-	COLOR	= { fg_color.R, fg_color.B, fg_color.G, 255 };
+	FOREGROUND = { fg_color.R, fg_color.B, fg_color.G, 255 };
 }
 
 /**
@@ -197,15 +212,22 @@ Huxley::handleKeyInput( SDL_Event &event ) {
 	
 	// TODO: Handle buffer input E.G. AltGr
 	if ( event.type == SDL_TEXTINPUT  ) {
-		printf( "%s\n", event.edit.text );
+		// Capture text input
+		printf( "I: %s\n", event.edit.text );
 		//strcat( input, event.text.text );
 	} else if ( event.type == SDL_TEXTEDITING ) {
+		printf(
+			"E: %s, %d\n", 
+			event.edit.text, // Composition
+			event.edit.start // Cursor
+		);
+		
 		//composition	= event.edit.text;
-		//cursor		= event.edit.start;
+		//cursor	= event.edit.start;
 		//selection	= event.edit.length;
 	} else {
-		const char* c	= SDL_GetKeyName( event.key.keysym.sym );
-		printf( "%s\n", c );
+		//const char* c	= SDL_GetKeyName( event.key.keysym.sym );
+		//printf( "%s\n", c );
 	}
 }
 
@@ -285,13 +307,6 @@ Huxley::handleKeyEvents( SDL_Event &event, Editor &editor ) {
 	if ( event.type == SDL_KEYUP ) {
 		handleKeyUp( event );
 		
-	// Normal text input
-	} else if ( 
-		event.type	== SDL_TEXTINPUT	|| 
-		event.type	== SDL_TEXTEDITING
-	) {
-		handleKeyInput( event );
-	
 	// Navigation or special editing?
 	} else if (
 		code		== SDLK_UP		|| 
@@ -304,9 +319,17 @@ Huxley::handleKeyEvents( SDL_Event &event, Editor &editor ) {
 		code		== SDLK_PAGEDOWN	|| 
 		code		== SDLK_RETURN		|| 
 		code		== SDLK_TAB		|| 
+		code		== SDLK_BACKSPACE	|| 
 		code		== SDLK_DELETE
 	) {
 		editor.sendCombo( ctrl_key.any, shift_key.any, code );
+	
+	// Normal text input
+	} else if ( 
+		event.type	== SDL_TEXTINPUT	|| 
+		event.type	== SDL_TEXTEDITING
+	) {
+		handleKeyInput( event );
 	}
 }
 
@@ -318,9 +341,10 @@ Huxley::handleWindowEvents( SDL_Event &event ) {
 	switch( event.window.event ) {
 		
 		// Window has been resized
-		case SDL_WINDOWEVENT_SIZE_CHANGED: {
+		case SDL_WINDOWEVENT_RESIZED: {
 			status.w	= event.window.data1;
 			status.h	= event.window.data2;
+			refresh();
 			break;
 		}
 		
@@ -328,12 +352,19 @@ Huxley::handleWindowEvents( SDL_Event &event ) {
 		case SDL_WINDOWEVENT_MOVED: {
 			status.x	= event.window.data1;
 			status.y	= event.window.data2;
+			refresh();
 			break;
 		}
 		
 		// Window changed back from full screen or minimize
 		case SDL_WINDOWEVENT_RESTORED: {
 			status.win	= WINDOW_SRES;
+			refresh();
+			break;
+		}
+		
+		case SDL_WINDOWEVENT_EXPOSED: {
+			refresh();
 			break;
 		}
 		
@@ -364,13 +395,20 @@ Huxley::handleWindowEvents( SDL_Event &event ) {
  */
 void
 Huxley::end( int e ) {
+	// End text input
+	SDL_StopTextInput();
+	
+	// Clean font
 	TTF_CloseFont( FONT );
 	TTF_Quit();
-	FONT	= NULL;
+	FONT		= NULL;
 	
 	SDL_DestroyRenderer( RENDERER );
 	SDL_DestroyWindow( WINDOW );
 	SDL_Quit();
+	
+	RENDERER	= NULL;
+	WINDOW		= NULL;
 	
 	// Do something with these (maybe profile settings?)
 	printf( "Last window size %d x %d\n", status.w, status.h );
