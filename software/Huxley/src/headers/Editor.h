@@ -7,12 +7,6 @@
 #include <SDL2/SDL.h>
 #include "HXTypes.h"
 
-/**
- *  Text input
- */
-extern char* input;
-extern char* composition;
-
 class Editor {
 	private:
 	
@@ -21,6 +15,9 @@ class Editor {
 		
 		// Current working document
 		HX_FILE	working_doc;
+		
+		// Current line being edited
+		std::size_t working_line		= 0;
 		
 		// Current working input
 		std::string working_str;
@@ -31,14 +28,12 @@ class Editor {
 		// Keyboard input
 		std::vector<HX_HISTORY> content;
 		
-		// Add last input phrase to history
-		void	syncInput();
+		/**
+		 *  Flags
+		 */
 		
-		// Open a given filename as a Huxley document
-		void	cmdOpen( std::string& fname );
-		
-		// Save working doument to filename
-		void	cmdSave( std::string& fname );
+		// Unicode text input active
+		bool	INPUT_ACTIVE	= false;
 		
 		// Apply requested command
 		void	applyCommand( unsigned char action );
@@ -47,6 +42,15 @@ class Editor {
 		Editor( unsigned char key_map );
 		
 		void	capslock();
+		
+		// Open a given filename as a Huxley document
+		void	cmdOpen( std::string& fname );
+		
+		// Save working doument to filename
+		void	cmdSave( std::string& fname );
+		
+		// Add last input phrase to history
+		void	syncInput( bool line = false );
 		
 		// Receive keyboard input
 		void
