@@ -80,7 +80,7 @@ inspired by WordStar for DOS.
 	<td>^B</td><td>Line break</td>
 </tr>
 <tr>
-	<td>option B</td><td>Page break</td>
+	<td>option Return</td><td>Page break</td>
 </tr>
 <tr>
 	<td>^[</td><td>Copy selected text to clipboard</td>
