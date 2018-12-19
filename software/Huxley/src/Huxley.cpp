@@ -85,13 +85,13 @@ Huxley::refresh() {
 void
 Huxley::setupFont( RGB fg_color ) {
 	if ( !TTF_WasInit() && TTF_Init() == -1 ) {
-		printf("Error initializing TTF: %s\n", TTF_GetError());
+		printf( "Error initializing TTF: %s\n", TTF_GetError() );
 		end( 1 );
 	}
 	
 	FONT	= TTF_OpenFont( FONT_FILE, FONT_SIZE );
 	if ( !FONT ) {
-		printf("TTF_OpenFont error: %s\n", TTF_GetError());
+		printf( "TTF_OpenFont error: %s\n", TTF_GetError() );
 		end( 1 );
 	}
 	
@@ -204,7 +204,7 @@ Huxley::handleKeyUp( SDL_Event &event ) {
  *  Text input handling. Needs buffer etc...
  */
 void
-Huxley::handleKeyInput( SDL_Event &event ) {
+Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 	if ( ctrl_key.any || alt_key.any ) {
 		return;
 	}
@@ -213,21 +213,15 @@ Huxley::handleKeyInput( SDL_Event &event ) {
 	// TODO: Handle buffer input E.G. AltGr
 	if ( event.type == SDL_TEXTINPUT  ) {
 		// Capture text input
-		printf( "I: %s\n", event.edit.text );
-		//strcat( input, event.text.text );
-	} else if ( event.type == SDL_TEXTEDITING ) {
-		printf(
-			"E: %s, %d\n", 
-			event.edit.text, // Composition
-			event.edit.start // Cursor
-		);
+		editor.sendInput( event.text.text, 0, 0 );
 		
-		//composition	= event.edit.text;
-		//cursor	= event.edit.start;
-		//selection	= event.edit.length;
-	} else {
-		//const char* c	= SDL_GetKeyName( event.key.keysym.sym );
-		//printf( "%s\n", c );
+	} else if ( event.type == SDL_TEXTEDITING ) {
+		// Capture edit
+		editor.sendInput(
+			event.edit.text, 
+			event.edit.start, 
+			event.edit.length
+		);
 	}
 }
 
@@ -329,7 +323,7 @@ Huxley::handleKeyEvents( SDL_Event &event, Editor &editor ) {
 		event.type	== SDL_TEXTINPUT	|| 
 		event.type	== SDL_TEXTEDITING
 	) {
-		handleKeyInput( event );
+		handleKeyInput( event, editor );
 	}
 }
 
@@ -424,7 +418,7 @@ Huxley::eventLoop( Editor &editor ) {
 	SDL_Event event;
 	static Uint32 windowID = SDL_GetWindowID( WINDOW );
 	if ( !windowID ) {
-		printf("WindowID error: %s\n", SDL_GetError());
+		printf( "WindowID error: %s\n", SDL_GetError() );
 		end( 1 );
 	}
 	
@@ -465,7 +459,7 @@ main() {
 	// Begin
 	Huxley hx( WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT );
 	
-	// TODO: Make this user selectable Default QWERTY
+	// TODO: Make this user selectable. Default QWERTY
 	Editor editor( MAP_QWERTY );
 	
 	// Event loop
