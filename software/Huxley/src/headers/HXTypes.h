@@ -116,12 +116,12 @@
 /**
  *  Formatting type
  */
-#define	F_NORMAL	0x0100
-#define	F_BOLD		0x0101
-#define	F_ITALIC	0x0102
-#define	F_UNDER		0x0103
-#define	F_SUP		0x0104
-#define	F_SUB		0x0105
+#define	F_NORMAL	0x0000
+#define	F_BOLD		0x0001
+#define	F_ITALIC	0x0002
+#define	F_UNDER		0x0003
+#define	F_SUP		0x0004
+#define	F_SUB		0x0005
 
 /**
  *  File types
@@ -144,12 +144,22 @@
 #define PG_SIZE		62
 
 // End markers
-#define END_MKR		"~!$%,.;*?()[]{}+-=/。"
+#define END_MKR		" ~!$%,.;*?()[]{}+-=/。"
 
 // Checksum format
 #define CHK_FORMAT	"%zx"
 
-#define CHK_SIZE	20
+// Checksum max size
+#define CHK_SIZE	25
+
+// Formatting size
+#define	FMT_SIZE	50
+
+// Line formatting stored in file
+#define FMT_FORMAT	"%c%i,%zx"
+
+// Formatting delimiter
+#define	FMT_DELIM	"|"
 
 /**
  *  Line checksum helpers
@@ -176,7 +186,7 @@ inline std::size_t TO_CHK( std::string& line ) {
 
 // Copy from string to checksum size_t
 inline void FROM_CHK( std::string& block, std::size_t& chk ) {
-	char tmp[CHK_SIZE]; // Extract from raw input
+	char tmp[CHK_SIZE]; // Extract chunk
 	snprintf( tmp, CHK_SIZE, "%s", block.c_str() );
 	
 	std::sscanf( tmp, CHK_FORMAT, &chk );
