@@ -5,6 +5,15 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+#define HUXLEY_VERSION	"0.0.1"
+
+/**
+ *  Window defaults
+ */
+#define WINDOW_WIDTH	800
+#define WINDOW_HEIGHT	600
+#define WINDOW_TITLE	"Huxley"
+
 // Some ideas to explore:
 // https://stackoverflow.com/questions/8365013/reading-line-from-text-file-and-putting-the-strings-into-a-vector
 
@@ -14,6 +23,16 @@
  */
 #define	MAP_QWERTY	0x0000	// Only QWERTY for now
 
+/**
+ *  Default font settings
+ */
+#define FONT_FILE	"bin/assets/fonts/NotoSansMono-Regular.ttf"
+#define FONT_SIZE	11
+
+/**
+ *  Main event loop delay
+ */
+#define LOOP_WAIT	10
 
 /**
  *  Keyboard commands
@@ -144,7 +163,7 @@
 #define PG_SIZE		62
 
 // End markers
-#define END_MKR		" ~!$%,.;*?()[]{}+-=/。"
+#define END_MKR		" ~!$%,.;。*?+-=\t\v\r\f\n\\"
 
 // Checksum format
 #define CHK_FORMAT	"%zx"
@@ -156,10 +175,13 @@
 #define	FMT_SIZE	50
 
 // Line formatting stored in file
-#define FMT_FORMAT	"%c%i,%zx"
+#define FMT_FORMAT	"%c%i,%zu"
 
 // Formatting delimiter
 #define	FMT_DELIM	"|"
+
+// File extension
+#define FILE_EXT	".hx"
 
 /**
  *  Line checksum helpers
