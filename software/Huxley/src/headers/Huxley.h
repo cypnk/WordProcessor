@@ -182,6 +182,9 @@ class Huxley {
 		// Main event loop
 		bool	eventLoop( Editor &editor );
 		
+		// Notify if text has changed
+		void	notifyByTitle();
+		
 		// Cleanup and end execution
 		void	end( int e );
 };
