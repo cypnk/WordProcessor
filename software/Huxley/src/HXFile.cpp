@@ -201,7 +201,7 @@ HXFile::openDoc( std::string& fname, HX_FILE& dest ) {
 			line.clear();
 		}
 		
-	} else if ( ENDS_WITH( fcmp, ".hx" ) ) {
+	} else if ( ENDS_WITH( fcmp, FILE_EXT ) ) {
 		// Append Huxley line to document block
 		while ( std::getline( file, line ) ) {
 			appendDoc( line, dest, ++index, FILE_HUXLEY );
