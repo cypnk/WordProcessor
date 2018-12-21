@@ -3,28 +3,12 @@
 
 #include <stdio.h>
 #include <unordered_map>
+#include <random>
+#include <chrono>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Editor.h"
 
-#define HUXLEY_VERSION	"0.0.1"
-
-/**
- *  Window defaults
- */
-#define WINDOW_WIDTH	800
-#define WINDOW_HEIGHT	600
-#define WINDOW_TITLE	"Huxley"
-
-// Main event loop delay
-Uint32
-LOOP_WAIT	= 10;
-
-int
-FONT_SIZE	= 11;
-
-const char*
-FONT_FILE	= "bin/assets/fonts/NotoSansMono-Regular.ttf";
 
 // Render 
 //std::unordered_map<SDL_Keycode, SDL_Texture>
@@ -103,8 +87,6 @@ COLORS {
 } COLORS;
 
 
-
-
 /**
  *  Cursor
  */
@@ -133,6 +115,9 @@ class Huxley {
 		Uint32 		WINDOW_FLAGS	= 
 					SDL_WINDOW_RESIZABLE |
 					SDL_WINDOW_ALLOW_HIGHDPI;
+		
+		// Document modified since opening
+		bool		modified;
 		
 		/**
 		 *  Special key input states
@@ -165,6 +150,12 @@ class Huxley {
 		 */
 		void	handleWindowEvents( SDL_Event &event );
 		void	refresh();
+		
+		/**
+		 *  Filename generation
+		 */
+		void	rndFile( std::string& fname );
+		void	genFile( std::string& fname );
 		
 		/**
 		 *  Keyboard events
