@@ -16,7 +16,8 @@ Editor::Editor( unsigned char key_map ) {
 	// TODO: Make this user selectable. Use QWERTY as default for now
 	switch( key_map ) {
 		case MAP_QWERTY:
-			KEY_MAP = QWERTY_MAP;
+			working_map	= ARRAY_SIZE( QWERTY_MAP );
+			KEY_MAP		= QWERTY_MAP;
 			break;
 	}
 }
@@ -28,7 +29,7 @@ void
 Editor::workingLimit( std::size_t& index ) {
 	std::size_t sz	= working_doc.data.size();
 	
-	if ( index >= sz ) {
+	if ( index > sz ) {
 		index	= ( sz == 0 ) ? 0 : sz - 1;
 	}
 }
@@ -46,8 +47,8 @@ Editor::syncInput( bool line ) {
 	
 	// TODO: Format sync history if new line
 	if ( line ) {
-		workingLimit( working_line );
 		++working_line;
+		workingLimit( working_line );
 	}
 	
 	// Calculate current working string checksum
@@ -75,13 +76,42 @@ Editor::syncInput( bool line ) {
 		};
 	}
 	
-	printf( "Line: %zx\n", working_line );
-	
 	if ( lsize > 0 ) {
 		printf( "%s", working_str.c_str() );
 		
 		// Clear after sync
 		working_str.clear();
+	}
+}
+
+/**
+ *  Break sentence at delimiters
+ */
+void
+Editor::syncLine() {
+	std::size_t ws	= working_str.size();
+	if ( ws < COL_SIZE ) {
+		return; // No need to break;
+	}
+	
+	// Find a good break point
+	std::size_t ending	= 
+		working_str.find_last_of( END_MKR );
+	
+	// Break found?
+	if ( ending != std::string::npos ) {
+		
+		// Capture everything after the break
+		std::string tmp( working_str.substr( ending + 1 ) );
+		
+		// Remove up to break
+		working_str.erase( ending + 1 );
+		syncInput( true );
+		
+		// Start again from the break
+		working_str = tmp;
+	
+	// TODO: Breakword (this is a problematic option)
 	}
 }
 
@@ -101,6 +131,9 @@ Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 		INPUT_ACTIVE = false;
 		working_str.append( edit );
 	}
+	
+	// Start a new line if we're at the limit
+	syncLine();
 }
 
 /**
@@ -108,10 +141,9 @@ Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
  */
 void
 Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
-	static int map_size = ARRAY_SIZE( QWERTY_MAP );
 	
 	// Iterate through key map
-	for ( int i = 0; i < map_size; i++ ) {
+	for ( int i = 0; i < working_map; i++ ) {
 		// Check code map
 		if ( 
 			key	== KEY_MAP[i].code	&& 
@@ -293,10 +325,10 @@ Editor::applyCommand( unsigned char action ) {
 		case T_OPEN: {
 			printf( "Open existing document\n" );
 			
-			// Test sample document
-			std::string oname = "samples/republic-plato.txt";
+			// Test sample document (need to work more)
+			//std::string oname = "samples/republic-plato.txt";
 			//std::string sname = "samples/sample.hx";
-			cmdOpen( oname );
+			//cmdOpen( oname );
 			//cmdSave( sname );
 			break;
 		}
@@ -355,32 +387,10 @@ Editor::applyCommand( unsigned char action ) {
 	}
 	
 	// Sync before continuing after a command
-	syncInput( line );
-}
-
-// https://stackoverflow.com/questions/236129/how-do-i-iterate-over-the-words-of-a-string
-void
-Editor::splitLine( 
-	std::string& line,
-	std::vector<std::string>& words 
-) {
-	std::string	delims	= END_MKR;
-	std::size_t	end	= 0;
-	
-	// First non-breaking block
-	std::size_t	start	= 
-	line.find_first_not_of( delims );
-	
-	while( 
-		( end = line.find_first_of( delims, start ) )
-		!= std::string::npos 
-	) {
-		words.push_back( line.substr( start, end - start ) );
-		start	= line.find_first_not_of( delims, end );
-	}
-	
-	if ( start != std::string::npos ) {
-		words.push_back( line.substr( start ) );
+	if ( line ) {
+		syncInput( line );
+	} else {
+		syncLine();
 	}
 }
 
