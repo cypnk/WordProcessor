@@ -16,6 +16,9 @@ class Editor {
 		// Current working document
 		HX_FILE	working_doc;
 		
+		// Size of the current key map
+		int working_map				= 0;
+		
 		// Current line being edited
 		std::size_t working_line		= 0;
 		
@@ -62,6 +65,9 @@ class Editor {
 		
 		// Add last input phrase to history
 		void	syncInput( bool line = false );
+		
+		// Select lines from raw input and sync sentence
+		void	syncLine();
 		
 		// Get the line at given index
 		void	lineAt( std::size_t& index, HX_LINE& line );
