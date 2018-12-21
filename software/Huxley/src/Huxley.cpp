@@ -52,6 +52,9 @@ Huxley::Huxley( const char* title, int width, int height ) {
 	
 	// Render window background
 	refresh();
+	
+	// Nothing typed
+	modified	= false;
 }
 
 /**
@@ -77,6 +80,19 @@ void
 Huxley::refresh() {
 	resetRender( BACKGROUND );
 	SDL_UpdateWindowSurface( WINDOW );
+}
+
+/**
+ *  Notify via title the text was modified
+ */
+void
+Huxley::notifyByTitle() {
+	if ( modified ) {
+		std::string newtitle( WINDOW_TITLE );
+		newtitle.append( "*" );
+		SDL_SetWindowTitle( WINDOW, newtitle.c_str() );	
+		modified = false;
+	}
 }
 
 /**
@@ -213,6 +229,7 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 	if ( event.type == SDL_TEXTINPUT  ) {
 		// Capture text input
 		editor.sendInput( event.text.text, 0, 0 );
+		modified = true;
 		
 	} else if ( event.type == SDL_TEXTEDITING ) {
 		// Capture edit
@@ -456,6 +473,20 @@ Huxley::eventLoop( Editor &editor ) {
 	return true;
 }
 
+/**
+ *  Generate a random filename
+ */
+void
+rndFile( std::string& fname ) {
+	std::string pool( "01234567890abcdefghijklmnopqrstuvwxyz");
+	std::mt19937 generator( std::random_device{}() );
+	
+	std::shuffle( pool.begin(), pool.end(), generator );
+	
+	fname.append( pool.substr( 0, 12 ) );
+	fname.append( FILE_EXT ); // Extension
+}
+
 int
 main() {
 	// Begin
@@ -467,7 +498,18 @@ main() {
 	// Event loop
 	while( hx.eventLoop( editor ) ) {
 		SDL_Delay( LOOP_WAIT );
+		
+		// Notify on input
+		hx.notifyByTitle();
 	}
+	
+	// Starting directory
+	std::string sname = "samples/";
+	rndFile( sname );
+	
+	// Save currently working document
+	editor.syncInput( true );
+	editor.cmdSave( sname );
 		
 	// End
 	hx.end( 0 );
