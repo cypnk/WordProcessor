@@ -508,7 +508,7 @@ main() {
 	rndFile( sname );
 	
 	// Save currently working document
-	editor.syncInput( true );
+	editor.sync();
 	editor.cmdSave( sname );
 		
 	// End
