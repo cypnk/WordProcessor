@@ -34,11 +34,19 @@ Editor::workingLimit( std::size_t& index ) {
 }
 
 /**
+ *  Sync current working string to input
+ */
+void
+Editor::sync() {
+	syncInput( working_str, true );
+}
+
+/**
  *  Add to history
  */
 void
-Editor::syncInput( bool line ) {
-	std::size_t lsize	= working_str.length();
+Editor::syncInput( std::string& working, bool line ) {
+	std::size_t lsize	= working.size();
 	
 	// TODO: Compile formatting for this line
 	std::vector<HX_FORMAT> fmt;
@@ -51,7 +59,7 @@ Editor::syncInput( bool line ) {
 	}
 	
 	// Calculate current working string checksum
-	std::size_t chk	= toCHK( working_str );
+	std::size_t chk	= toCHK( working );
 	
 	// New line?
 	if ( working_line >= working_doc.data.size() ) {
@@ -59,7 +67,7 @@ Editor::syncInput( bool line ) {
 			chk, 
 			true, 
 			working_line, 
-			working_str, 
+			working, 
 			fmt
 		} );
 		
@@ -70,16 +78,14 @@ Editor::syncInput( bool line ) {
 			chk, 
 			true, 
 			working_line, 
-			working_str, 
+			working, 
 			fmt
 		};
 	}
 	
 	if ( lsize > 0 ) {
-		printf( "%s\n", working_str.c_str() );
-		
 		// Clear after sync
-		working_str.clear();
+		working.clear();
 	}
 }
 
@@ -105,8 +111,8 @@ Editor::syncLine() {
 		it != segments.end();
 		++it
 	) {
-		working_str = ( *it );
-		syncInput( true );
+		// Each segment is a line
+		syncInput( ( *it ), true );
 	}
 }
 
@@ -156,8 +162,6 @@ Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
  */
 void
 Editor::applyCommand( unsigned char action ) {
-	bool line = false;
-	
 	switch( action ) {
 		
 		// Basic movement
@@ -272,13 +276,13 @@ Editor::applyCommand( unsigned char action ) {
 		case T_BREAK: {
 			//printf( "Insert break\n" );
 			working_str.append( "\n" );
-			line = true;
+			syncInput( working_str, true );
 			break;
 		}
 		// Insert page break
 		case E_BREAK: {
 			printf( "Insert page break\n" );
-			line = true;
+			syncInput( working_str, true );
 			break;
 		}
 		
@@ -383,10 +387,6 @@ Editor::applyCommand( unsigned char action ) {
 		}
 	}
 	
-	// Sync before continuing after a command
-	if ( line ) {
-		syncInput( true );
-	}
 	syncLine();
 }
 
@@ -521,6 +521,7 @@ Editor::breakSegments(
 		
 			// Remove up to break
 			working.erase( ending + 1 );
+			printf( "%s\n", working.c_str() );
 			working	= remainder;
 		
 		// Break word at the COL_SIZE (this is not ideal)
