@@ -170,10 +170,23 @@ class Editor {
 			std::size_t	index,
 			unsigned char	ftype
 		);
+		
+		// Add last input phrase to history
+		void
+		syncInput( 
+			std::string&	working, 
+			bool 		line	= false )
+		;
+		
+		// Select lines from raw input and sync sentence
+		void	syncLine();
 	public:
 		Editor( unsigned char key_map );
 		
 		void	capslock();
+		
+		// Append working string to document
+		void	sync();
 		
 		// Checksum passed
 		bool			good	= true;
@@ -183,12 +196,6 @@ class Editor {
 		
 		// Save working doument to filename
 		void	cmdSave( std::string& fname );
-		
-		// Add last input phrase to history
-		void	syncInput( bool line = false );
-		
-		// Select lines from raw input and sync sentence
-		void	syncLine();
 		
 		// Get the line at given index
 		void	lineAt( std::size_t& index, HX_LINE& line );
