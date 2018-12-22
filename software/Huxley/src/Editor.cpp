@@ -2,7 +2,6 @@
 #define EDITOR_CPP
 
 #include "headers/HXTypes.h"
-#include "headers/HXFile.h"
 #include "headers/Keyboard.h"
 #include "headers/Editor.h"
 
@@ -52,7 +51,7 @@ Editor::syncInput( bool line ) {
 	}
 	
 	// Calculate current working string checksum
-	std::size_t chk	= TO_CHK( working_str );
+	std::size_t chk	= toCHK( working_str );
 	
 	// New line?
 	if ( working_line >= working_doc.data.size() ) {
@@ -77,7 +76,7 @@ Editor::syncInput( bool line ) {
 	}
 	
 	if ( lsize > 0 ) {
-		printf( "%s", working_str.c_str() );
+		printf( "%s\n", working_str.c_str() );
 		
 		// Clear after sync
 		working_str.clear();
@@ -89,29 +88,25 @@ Editor::syncInput( bool line ) {
  */
 void
 Editor::syncLine() {
-	std::size_t ws	= working_str.size();
-	if ( ws < COL_SIZE ) {
-		return; // No need to break;
+	std::vector<std::string> segments;
+	
+	// Nothing to break yet
+	if ( working_str.size() < COL_SIZE ) {
+		return;
 	}
 	
-	// Find a good break point
-	std::size_t ending	= 
-		working_str.find_last_of( END_MKR );
+	// Break working string into segments
+	breakSegments( working_str, segments );
 	
-	// Break found?
-	if ( ending != std::string::npos ) {
-		
-		// Capture everything after the break
-		std::string tmp( working_str.substr( ending + 1 ) );
-		
-		// Remove up to break
-		working_str.erase( ending + 1 );
+	// Sync each segment
+	for ( 
+		std::vector<std::string>::iterator it = 
+			segments.begin(); 
+		it != segments.end();
+		++it
+	) {
+		working_str = ( *it );
 		syncInput( true );
-		
-		// Start again from the break
-		working_str = tmp;
-	
-	// TODO: Breakword (this is a problematic option)
 	}
 }
 
@@ -275,13 +270,15 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Insert line break
 		case T_BREAK: {
-			printf( "Insert break\n" );
+			//printf( "Insert break\n" );
+			working_str.append( "\n" );
 			line = true;
 			break;
 		}
 		// Insert page break
 		case E_BREAK: {
 			printf( "Insert page break\n" );
+			line = true;
 			break;
 		}
 		
@@ -388,10 +385,9 @@ Editor::applyCommand( unsigned char action ) {
 	
 	// Sync before continuing after a command
 	if ( line ) {
-		syncInput( line );
-	} else {
-		syncLine();
+		syncInput( true );
 	}
+	syncLine();
 }
 
 /**
@@ -421,22 +417,477 @@ Editor::lineAt( std::size_t& index, HX_LINE& line ) {
 }
 
 /**
+ *  Client input handling
+ */
+std::size_t
+Editor::toCHK( std::string& line ) {
+	std::size_t chk	= 0;
+	const char* str		= line.c_str();
+	while( *str ) {
+		chk = ( chk * CHK_A ) ^ ( str[0] * CHK_B );
+		str++;
+	}
+	return chk % CHK_C;
+}
+
+// https://stackoverflow.com/a/744822
+int
+Editor::endsWith(
+	const char*	str,
+	const char*	suffix
+) {
+	if ( !str || !suffix ) {
+		return 0;
+	}
+	
+	std::size_t len_str	= strlen( str );
+	std::size_t len_sfx	= strlen( suffix );
+	
+	if ( len_sfx > len_str ) {
+		return 0;
+	}
+	
+	return 
+	strncmp( str + len_str - len_sfx, suffix, len_sfx ) == 0;
+}
+
+// Copy from string to checksum size_t
+void
+Editor::fromCHK(
+	std::string&		block, 
+	std::size_t&		chk
+) {
+	char tmp[CHK_SIZE];
+	
+	// Extract chunk
+	snprintf( tmp, CHK_SIZE, "%s", block.c_str() );
+	
+	std::sscanf( tmp, CHK_FORMAT, &chk );
+}
+
+// Copy checksum to char array
+void 
+Editor::copyCHK(
+	char*			check,
+	std::size_t&		chk
+) {
+	snprintf( check, CHK_SIZE, CHK_FORMAT, chk );	
+}
+
+// Idea borrowed from Salvatore Sanfilippo's ( antirez ) Kilo editor
+// https://github.com/antirez/kilo
+bool
+Editor::isBreak( int c ) {
+	return
+	c == '\0' || isspace( c ) || strchr( END_MKR, c ) != NULL;
+}
+
+// Word separator ( for languages that use spaces )
+bool
+Editor::isSpace( const char* c ) {
+	return strchr( c, ' ' ) != NULL;
+}
+
+/** 
+ *  Split line into chunks until working string fits to COL_SIZE
+ */
+void
+Editor::breakSegments( 
+	std::string&			working, 
+	std::vector<std::string>&	segments, 
+	bool				append
+) {
+	// Nothing to break. Append to segments as-is
+	if ( working.size() < COL_SIZE ) {
+		segments.push_back( working );
+		return;
+	}
+	
+	// Placeholders
+	std::string remainder;
+	std::size_t ending;
+	
+	// Keep breaking while working size is bigger than COL_SIZE
+	while ( working.size() > COL_SIZE ) {
+		
+		// Find a good break point in the first COL_SIZE chunk
+		ending	= 
+		working.substr( 0, COL_SIZE - 1 ).find_last_of( END_MKR );
+		
+		// Break found?
+		if ( ending != std::string::npos ) {
+			// Capture everything after the break
+			remainder = working.substr( ending + 1 );
+		
+			// Remove up to break
+			working.erase( ending + 1 );
+			working	= remainder;
+		
+		// Break word at the COL_SIZE (this is not ideal)
+		} else {
+			remainder = working.substr( COL_SIZE - 1 );
+			working.erase( COL_SIZE );
+		}
+		
+		// Append working string to processed segments
+		segments.push_back( working );
+		
+		// We have a remainder?
+		if ( remainder.size() > 0 ) {
+			working	= remainder;
+			continue;
+		}
+		
+		// No remainder but working size is still too big?
+		// Something went wrong
+		break;
+	}
+	
+	// Include the last chunk in the segments?
+	// I.E. This wasn't being typed
+	if ( append ) {
+		segments.push_back( working );
+	}
+}
+
+
+
+
+/**
+ *  File handling
+ */
+
+
+/**
+ *  Copy from string in file to formatting
+ */
+void
+Editor::extractFormat(
+	std::string& block,
+	std::vector<HX_FORMAT>& fmt 
+) {
+	char tmp[FMT_SIZE];	// String chunk size
+	char* raw;		// Raw formatting chunk
+	
+	// Format data
+	Sint32		start	= 0;
+	std::size_t	length	= 0;
+	char		type[1];
+	
+	// Default, no formatting
+	unsigned char	format	= F_NORMAL;
+	
+	// Extract from chunk
+	snprintf( tmp, FMT_SIZE, "%s", block.c_str() );
+	
+	// Tokenize
+	raw = strtok( tmp, FMT_DELIM );
+	
+	while( raw != NULL ) {
+		sscanf( raw, FMT_FORMAT, type, &start, &length );
+		
+		// Select formatting by type
+		switch( type[0] ) {
+			case 'b': { // Bold
+				format = F_BOLD;
+				break;
+			}
+			case 'i': { // Italic
+				format = F_ITALIC;
+				break;
+			}
+			case 'u': { // Underlined
+				format = F_UNDER;
+				break;
+			}
+			case 'p': { // Superscript
+				format = F_SUP;
+				break;
+			}
+			case 's': { // Subscript
+				format = F_SUB;
+				break;
+			}
+			default: { // No formatting
+				format = F_NORMAL;
+			}
+		}
+		fmt.push_back( HX_FORMAT { 
+			start, length, format
+		} );
+		raw =  strtok( NULL, FMT_DELIM );
+	}
+}
+
+void
+Editor::saveFormat(
+	std::string& block,
+	std::vector<HX_FORMAT>& fmt 
+) {
+	// Formatting chunk
+	char tmp[FMT_SIZE];
+	char type;
+	
+	for (
+		std::vector<HX_FORMAT>::iterator it = 
+			fmt.begin(); 
+		it != fmt.end(); 
+		++it
+	) {
+		switch( (*it).type ) {
+			case F_BOLD: {
+				type = 'b';
+				break;
+			}
+			case F_ITALIC: {
+				type = 'i';
+				break;
+			}
+			case F_UNDER: {
+				type = 'u';
+				break;
+			}
+			case F_SUP: {
+				type = 'p';
+				break;
+			}
+			case F_SUB: {
+				type = 's';
+				break;
+			}
+			default: {
+				type = 'n';
+			}
+		}
+		
+		snprintf( tmp, FMT_SIZE, FMT_FORMAT, 
+			type, (*it).start, (*it).length );
+		block.append( tmp );
+		tmp[0] = '\0';
+		
+		// Not the end? Add a delimiter
+		if ( std::next( it ) != fmt.end() ) {
+			block.append( FMT_DELIM );
+		}
+	}
+}
+
+void
+Editor::extractLine(
+	std::size_t&		chk,
+	std::string&		line,
+	std::string&		extracted,
+	std::vector<HX_FORMAT>& fmt
+) {
+	std::istringstream str( line );
+	std::string block;
+	int i = 0;
+	
+	// Read each line segment
+	while( std::getline( str, block ) ) {
+		// Huxley lines should not exceed this
+		//if ( i > SEG_SIZE ) {
+		//	break;
+		//}
+		
+		// Checksum
+		if ( i == 0 ) {
+			// Copy checksum
+			fromCHK( block, chk );
+		
+		// Copy formatting
+		} else if ( i == 1 ) {
+			extractFormat( block, fmt );
+		} else {
+			// Append as-is
+			extracted.append( block + SEG_DELIM );
+		}
+		i++;
+	}
+	// Remove lastly appened space
+	if ( extracted.length() > 1 ) {
+		extracted.erase( extracted.length() - 1 );
+	}
+}
+
+
+void
+Editor::saveDoc( std::string& fname, HX_FILE&source ) {
+	std::ofstream file( fname.c_str() );
+	if ( !file.is_open() || !file.good() ) {
+		return;
+	}
+	
+	std::string block;
+	// Checksum placeholder (slightly over-provisioned)
+	char check[CHK_SIZE];	
+	for (
+		std::vector<HX_LINE>::iterator it = 
+			source.data.begin(); 
+		it != source.data.end(); 
+		++it
+	) {
+		// Copy line checksum
+		copyCHK( check, (*it).chk );
+		
+		// Append formatting data
+		saveFormat( block, (*it).format );
+		
+		// Delimited checksum, formatting, and line text
+		file << check << SEG_DELIM << block.c_str() << 
+			SEG_DELIM << (*it).line.c_str() << LINE_DELIM;
+		
+		block.clear();
+	}
+	
+	file.close();
+}
+
+void
+Editor::openDoc( std::string& fname, HX_FILE& dest ) {
+	const char* fcmp	= fname.c_str();
+	
+	// Setup working file
+	std::ifstream file( fcmp );
+	if ( !file.is_open() || !file.good() ) {
+		return;
+	}
+	
+	// Line index
+	std::size_t	index	= 0;
+	
+	std::string line;
+	// Detect file type and load Huxley documents differently
+	if ( endsWith( fcmp, ".txt" ) ) {
+		// Append lines to document block
+		while ( std::getline( file, line ) ) {
+			appendDoc( line, dest, ++index, FILE_TEXT );
+			line.clear();
+		}
+		
+	} else if ( endsWith( fcmp, FILE_EXT ) ) {
+		// Append Huxley line to document block
+		while ( std::getline( file, line ) ) {
+			appendDoc( line, dest, ++index, FILE_HUXLEY );
+			line.clear();
+		}
+	} else {
+		// Shouldn't handle yet
+		while ( std::getline( file, line ) ) {
+			appendDoc( line, dest, ++index, FILE_UNKOWN );
+			line.clear();
+		}
+		
+	}
+	
+	file.close();
+	if ( !file ) {
+		// Error
+		return;
+	}
+}
+
+
+/**
+ *  Convert broken text segments to individual lines in a document
+ */
+void
+Editor::segmentsToFile( 
+	std::vector<std::string>&	segments, 
+	std::size_t&			index,
+	std::size_t&			chk,
+	std::vector<HX_FORMAT>&		fmt,
+	HX_FILE& 			dest
+) {
+	for ( 
+		std::vector<std::string>::iterator it = 
+			segments.begin(); 
+		it != segments.end();
+		++it
+	) {
+		// Fresh checksum
+		chk	= toCHK( ( *it ) );
+		
+		// Empty formatting
+		fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
+		
+		// Add line
+		dest.data.push_back( HX_LINE { 
+			chk, true, index, ( *it ), fmt 
+		} );
+	}
+}
+
+void
+Editor::appendDoc(
+	std::string&	line, 
+	HX_FILE& 	dest,
+	std::size_t	index,
+	unsigned char	ftype
+) {
+	// TODO: Make this read formatting from the line
+	std::vector<HX_FORMAT>	fmt;
+	std::size_t		chk;
+	bool			passed	= true;
+	
+	switch( ftype ) {
+		
+		// Huxley file
+		case FILE_HUXLEY: {
+			std::string extracted	= "";
+			
+			// Extract line, checksum, and formatting
+			extractLine( chk, line, extracted, fmt );
+			
+			// Integrity check
+			passed			= 
+			chk == toCHK( extracted );
+			
+			// Integrity check failed at any point?
+			if ( !passed ) {
+				good = false;
+				bad_lines.push_back( index );
+			}
+			
+			// Add line with any formatting
+			// and if given and calculated checksums match
+			dest.data.push_back( HX_LINE {
+				chk,
+				passed,
+				index,
+				extracted, 
+				fmt
+			} );
+			break;
+		} 
+		
+		default: {
+			std::vector<std::string> segments;
+			
+			// Break raw line into segments
+			breakSegments( line, segments, true );
+			segmentsToFile( segments, chk, index, fmt, dest );
+		}
+	}
+}
+
+
+/**
  *  Open document, create lnie checksums
  */
 void
 Editor::cmdOpen( std::string &fname ) {
-	HXFile document;
-	document.openDoc( fname, working_doc );
+	openDoc( fname, working_doc );
 	
 	// Check integrity
-	if ( document.good ) {
+	if ( good ) {
 		printf( "Integrity check passed" );
 	} else {
 		printf( "Integrity check failed on line(s): " );
 		for (
 			std::vector<std::size_t>::iterator bt = 
-				document.bad_lines.begin(); 
-			bt != document.bad_lines.end();
+				bad_lines.begin(); 
+			bt != bad_lines.end();
 			++bt
 		) {
 			printf( "%zu ", ( *bt ) );
@@ -446,8 +897,7 @@ Editor::cmdOpen( std::string &fname ) {
 
 void
 Editor::cmdSave( std::string& fname ) {
-	HXFile document;
-	document.saveDoc( fname, working_doc );
+	saveDoc( fname, working_doc );
 }
 
 #endif
