@@ -163,7 +163,7 @@
 #define PG_SIZE		62
 
 // End markers
-#define END_MKR		" ~!$%,.;。*?+-=\t\v\r\f\n\\"
+#define END_MKR		" ~!$%,.;。*\?+-=\t\r\f\n\\"
 
 // Checksum format
 #define CHK_FORMAT	"%zx"
@@ -180,79 +180,22 @@
 // Formatting delimiter
 #define	FMT_DELIM	"|"
 
+// Line segment (checksum, formatting, text) delimiter
+#define SEG_DELIM	"\v"
+
+// Line segment length 
+// Checksum + Formatting + Text data + 2 delimiters between each
+#define SEG_SIZE	CHK_SIZE + FMT_SIZE + COL_SIZE  + 2
+
+// Line delimiter
+#define LINE_DELIM	"\n"
+
 // File extension
 #define FILE_EXT	".hx"
 
 /**
  *  Line checksum helpers
  */
-
-// Checksum primes
-#define	CHK_A		81667
-#define	CHK_B		83311
-#define	CHK_C		90173
-
-// Generate checksum from string
-// https://stackoverflow.com/questions/8317508/hash-function-for-a-string
-inline std::size_t TO_CHK( std::string& line ) {
-	// return std::hash<std::string>{}( line );
-	// Alternative with smaller hash size
-	std::size_t chk	= 0;
-	const char* str		= line.c_str();
-	while( *str ) {
-		chk = ( chk * CHK_A ) ^ ( str[0] * CHK_B );
-		str++;
-	}
-	return chk % CHK_C;
-}
-
-// Copy from string to checksum size_t
-inline void FROM_CHK( std::string& block, std::size_t& chk ) {
-	char tmp[CHK_SIZE]; // Extract chunk
-	snprintf( tmp, CHK_SIZE, "%s", block.c_str() );
-	
-	std::sscanf( tmp, CHK_FORMAT, &chk );
-}
-
-// Copy checksum to char array
-inline void COPY_CHK( char* check, std::size_t& chk ) {
-	snprintf( check, CHK_SIZE, CHK_FORMAT, chk );	
-}
-
-/**
- *  Content detection
- */
-// Idea borrowed from Salvatore Sanfilippo's ( antirez ) Kilo editor
-// https://github.com/antirez/kilo
-inline bool IS_BREAK( int c ) {
-	return
-	c == '\0' || isspace( c ) || strchr( END_MKR, c ) != NULL;
-}
-
-// Word separator ( for languages that use spaces )
-inline bool IS_SPACE( const char* c ) {
-	return strchr( c, ' ' ) != NULL;
-}
-
-// https://stackoverflow.com/a/744822
-inline int ENDS_WITH(
-	const char*	str,
-	const char*	suffix
-) {
-	if ( !str || !suffix ) {
-		return 0;
-	}
-	
-	std::size_t len_str	= strlen( str );
-	std::size_t len_sfx	= strlen( suffix );
-	
-	if ( len_sfx > len_str ) {
-		return 0;
-	}
-	
-	return 
-	strncmp( str + len_str - len_sfx, suffix, len_sfx ) == 0;
-}
 
 // Cursor position on document (not on screen)
 struct
@@ -284,6 +227,9 @@ HX_LINE {
 	std::size_t		index;	// Position in document
 	std::string		line;	// Line content
 	std::vector<HX_FORMAT>	format;	// Text formatting
+	
+	// This line is a page break
+	bool			page	= false;
 };
 
 // Keyboard input (smallest affected text segment)
@@ -293,6 +239,15 @@ HX_ACTION {
 	Sint32			length	= 0;
 	std::string		text	= "";
 	std::vector<HX_FORMAT>	format;
+};
+
+// Annotation/memos
+struct
+HX_MEMO {
+	std::size_t		index;		// Line index
+	std::size_t		start	= 0;	// Position in line
+	std::size_t		length	= 0;	// Highlight length
+	std::string		content;	// Memo data
 };
 
 // A complete line synced to the file
