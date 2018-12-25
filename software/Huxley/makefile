@@ -26,14 +26,15 @@ DEPS		:= $(OBJS:.o=.d)
 # Include settings
 INC_DIR		:= $(shell find $(SRC_DIR) -type d | LC_ALL=C sort)
 INC_FLAGS	:= $(addprefix -I,$(INC_DIR))
+LD_FLAGS	?= -Wl,-Bstatic
 
 # C++ Flags
 CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra -Wconversion \
--Wunreachable-code -Wshadow -Werror -pedantic -std=c++17 -O2
+-Wunreachable-code -Wshadow -Werror -pedantic -std=c++17 -Os
 
 
 $(BIN_DIR)/$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -lSDL2 -lSDL2_ttf
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) -l SDL2 -l SDL2_ttf
 
 # Assembly
 $(BUILD_DIR)/%.s.o: $.s
