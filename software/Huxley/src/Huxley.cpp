@@ -477,7 +477,7 @@ Huxley::eventLoop( Editor &editor ) {
  *  Generate a random filename
  */
 void
-rndFile( std::string& fname ) {
+Huxley::rndFile( std::string& fname ) {
 	std::string pool( "01234567890abcdefghijklmnopqrstuvwxyz");
 	std::mt19937 generator( std::random_device{}() );
 	
@@ -487,10 +487,76 @@ rndFile( std::string& fname ) {
 	fname.append( FILE_EXT ); // Extension
 }
 
+/**
+ *  Clean out current parameter option/value set
+ */
+void
+Huxley::dumpParams( CMD_PARAM& param ) {
+	param.opt.clear();
+	param.value.clear();
+}
+
+/**
+ *  Get command line arguments and push to holding vector
+ */
+void
+Huxley::parseParams( int argc, char* argv[] ) {
+	CMD_PARAM param;
+	std::string	raw;
+	for ( int i = 0; i < argc; ++i ) {
+		raw = std::string( argv[i] );
+		
+		// If this is an option ( starts with dash )
+		if ( raw[0] == '-' ) {
+			// Not just dash?
+			if ( raw.size() > 1 ) {
+				param.opt = raw;
+				
+			// Invalid option. Start again with next param
+			} else {
+				dumpParams( param );
+				continue;
+			}
+		
+		// If this is a value
+		} else {
+			// Need an option to be set first
+			if ( param.opt.empty() ) {
+				// If not, discard value
+				dumpParams( param );
+				continue;
+			} else {
+				param.value = raw;
+			}
+		}
+		
+		// We got nothing from this round? Clear everything
+		if ( param.opt.empty() && param.value.empty() ) {
+			dumpParams( param );
+			continue;
+		
+		// We got both parts?
+		} else if ( !param.opt.empty() && !param.opt.empty() ) {
+			parameters.push_back( param );
+			dumpParams( param );
+			continue;
+		}
+	}
+}
+
+/**
+ *  Main program
+ */
 int
-main() {
+main( int argc, char* argv[] ) {
+	
 	// Begin
 	Huxley hx( WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT );
+	if ( argc > 0 ) {
+		// Cross-platform argument handling
+		hx.parseParams( argc, argv );
+	}
+	
 	
 	// TODO: Make this user selectable. Default QWERTY
 	Editor editor( MAP_QWERTY );
@@ -505,7 +571,7 @@ main() {
 	
 	// Starting directory
 	std::string sname = "samples/";
-	rndFile( sname );
+	hx.rndFile( sname );
 	
 	// Save currently working document
 	editor.sync();
