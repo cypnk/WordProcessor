@@ -10,11 +10,6 @@
 #include "Editor.h"
 
 
-// Render 
-//std::unordered_map<SDL_Keycode, SDL_Texture>
-//SYMBOL_CACHE;
-
-
 // Size restored (default)
 int
 WINDOW_SRES	= 0;
@@ -86,7 +81,6 @@ COLORS {
 	RGB asbestos	{ 127, 140, 141, 1 };
 } COLORS;
 
-
 /**
  *  Cursor
  */
@@ -116,8 +110,13 @@ class Huxley {
 					SDL_WINDOW_RESIZABLE |
 					SDL_WINDOW_ALLOW_HIGHDPI;
 		
+		
 		// Document modified since opening
 		bool		modified;
+		
+		// Render 
+		//std::unordered_map<SDL_Keycode, SDL_Texture> 
+		//	SYMBOL_CACHE;
 		
 		/**
 		 *  Special key input states
@@ -139,6 +138,16 @@ class Huxley {
 			int	win;
 		} status;
 		
+		// Command line parameter ( -c value format )
+		struct
+		CMD_PARAM {
+			std::string opt;
+			std::string value;
+		};
+		
+		// Parameter holder
+		std::vector<CMD_PARAM>	parameters;
+		
 		/**
 		 *  Base operations
 		 */
@@ -150,12 +159,6 @@ class Huxley {
 		 */
 		void	handleWindowEvents( SDL_Event &event );
 		void	refresh();
-		
-		/**
-		 *  Filename generation
-		 */
-		void	rndFile( std::string& fname );
-		void	genFile( std::string& fname );
 		
 		/**
 		 *  Keyboard events
@@ -178,6 +181,17 @@ class Huxley {
 	public:
 		// Initialize
 		Huxley( const char* title, int width, int height );
+		
+		// Parameter parsing
+		void	parseParams( int argc, char* argv[] );
+		void	dumpParams( CMD_PARAM& param );
+		
+		/**
+		 *  Filename generation
+		 */
+		void	rndFile( std::string& fname );
+		void	genFile( std::string& fname );
+		
 		
 		// Main event loop
 		bool	eventLoop( Editor &editor );
