@@ -58,6 +58,14 @@ Huxley::Huxley( const char* title, int width, int height ) {
 }
 
 /**
+ *  Send modification flag
+ */
+bool
+Huxley::isModified() {
+	return modified;
+}
+
+/**
  *  Startup background
  */
 void
@@ -569,14 +577,18 @@ main( int argc, char* argv[] ) {
 		hx.notifyByTitle();
 	}
 	
-	// Starting directory
-	std::string sname = "samples/";
-	hx.rndFile( sname );
 	
-	// Save currently working document
-	editor.sync();
-	editor.cmdSave( sname );
+	// If the file was modified, save it to samples
+	if ( hx.isModified() ) {
+		// Starting directory
+		std::string sname = "samples/";
+		hx.rndFile( sname );
 		
+		// Save currently working document
+		editor.sync();
+		editor.cmdSave( sname );
+	}
+	
 	// End
 	hx.end( 0 );
 }
