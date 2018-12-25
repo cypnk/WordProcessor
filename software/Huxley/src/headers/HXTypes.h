@@ -175,10 +175,10 @@
 #define FMT_FORMAT	"%c%i,%zu"
 
 // Formatting delimiter
-#define	FMT_DELIM	"|"
+#define	FMT_DELIM	"\x1D"
 
 // Line segment (checksum, formatting, text) delimiter
-#define SEG_DELIM	"\v"
+#define SEG_DELIM	"\x1E"
 
 #define MARK_DELIM	"\uFFFF"
 
@@ -199,8 +199,8 @@
 // Cursor position on document (not on screen)
 struct
 HX_CURSOR {
-	Sint32			column;
-	Sint32			line;
+	std::size_t		column;
+	std::size_t		line;
 };
 
 // Selected text
