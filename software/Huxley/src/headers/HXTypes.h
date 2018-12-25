@@ -156,6 +156,9 @@
 // Lines per page
 #define PG_SIZE		62
 
+// Lines per scroll
+#define SCRL_SIZE	3
+
 // End markers
 #define END_MKR		" ~!$%,.;。*\?+-=\t\r\f\n\\"
 
@@ -206,8 +209,8 @@ HX_CURSOR {
 // Selected text
 struct
 HX_SELECTION {
-	Sint32			start	= 0;	// Location from cursor
-	Sint32			length	= 0;	// Selection length
+	std::size_t		start	= 0;	// Location from cursor
+	std::size_t		length	= 0;	// Selection length
 	std::string		data;		// Selected text
 };
 
