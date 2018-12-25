@@ -31,8 +31,8 @@ class Editor {
 		// Size of the current key map
 		int working_map				= 0;
 		
-		// Current line being edited
-		std::size_t working_line		= 0;
+		// Current location being edited
+		HX_CURSOR working_cur			= { 0, 0 };
 		
 		// Current working input
 		std::string working_str;
@@ -44,6 +44,10 @@ class Editor {
 		
 		// Keyboard input
 		std::vector<HX_HISTORY> content;
+		
+		// Move cursor within limits
+		void
+		moveCursor( int x = 0, int y = 0 );
 		
 		// Split a line by tokens
 		void
@@ -98,6 +102,8 @@ class Editor {
 			bool				append	= false
 		);
 		
+		// Testing
+		void	printCursor();
 		
 		/**
 		 *  Flags
