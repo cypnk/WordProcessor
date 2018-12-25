@@ -430,27 +430,6 @@ Editor::toCHK( std::string& line ) {
 	return chk % CHK_C;
 }
 
-// https://stackoverflow.com/a/744822
-int
-Editor::endsWith(
-	const char*	str,
-	const char*	suffix
-) {
-	if ( !str || !suffix ) {
-		return 0;
-	}
-	
-	std::size_t len_str	= strlen( str );
-	std::size_t len_sfx	= strlen( suffix );
-	
-	if ( len_sfx > len_str ) {
-		return 0;
-	}
-	
-	return 
-	strncmp( str + len_str - len_sfx, suffix, len_sfx ) == 0;
-}
-
 // Copy from string to checksum size_t
 void
 Editor::fromCHK(
@@ -488,6 +467,28 @@ Editor::isSpace( const char* c ) {
 	return strchr( c, ' ' ) != NULL;
 }
 
+// https://stackoverflow.com/a/744822
+int
+Editor::endsWith(
+	const char*	str,
+	const char*	suffix
+) {
+	if ( !str || !suffix ) {
+		return 0;
+	}
+	
+	std::size_t len_str	= strlen( str );
+	std::size_t len_sfx	= strlen( suffix );
+	
+	if ( len_sfx > len_str ) {
+		return 0;
+	}
+	
+	return 
+	strncmp( str + len_str - len_sfx, suffix, len_sfx ) == 0;
+}
+
+
 /** 
  *  Split line into chunks until working string fits to COL_SIZE
  */
@@ -521,14 +522,14 @@ Editor::breakSegments(
 		
 			// Remove up to break
 			working.erase( ending + 1 );
-			printf( "%s\n", working.c_str() );
-			working	= remainder;
 		
 		// Break word at the COL_SIZE (this is not ideal)
 		} else {
 			remainder = working.substr( COL_SIZE - 1 );
 			working.erase( COL_SIZE );
 		}
+		
+		printf( "%s\n", working.c_str() );
 		
 		// Append working string to processed segments
 		segments.push_back( working );
@@ -826,9 +827,13 @@ Editor::appendDoc(
 	std::size_t	index,
 	unsigned char	ftype
 ) {
-	// TODO: Make this read formatting from the line
+	// Formatting read from the line
 	std::vector<HX_FORMAT>	fmt;
+	
+	// Line checksum placeholder
 	std::size_t		chk;
+	
+	// Integrity check passed?
 	bool			passed	= true;
 	
 	switch( ftype ) {
@@ -846,7 +851,10 @@ Editor::appendDoc(
 			
 			// Integrity check failed at any point?
 			if ( !passed ) {
+				// Global failiure flag
 				good = false;
+				
+				// Append to bad lines list
 				bad_lines.push_back( index );
 			}
 			
@@ -860,8 +868,9 @@ Editor::appendDoc(
 				fmt
 			} );
 			break;
-		} 
+		}
 		
+		// Plain text
 		default: {
 			std::vector<std::string> segments;
 			
