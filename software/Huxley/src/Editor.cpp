@@ -12,6 +12,9 @@ Editor::Editor( unsigned char key_map ) {
 	// Fresh working string
 	working_str	= "";
 	
+	// Set start position
+	working_cur	= { 0, 0 };
+	
 	// TODO: Make this user selectable. Use QWERTY as default for now
 	switch( key_map ) {
 		case MAP_QWERTY:
@@ -54,30 +57,30 @@ Editor::syncInput( std::string& working, bool line ) {
 	
 	// TODO: Format sync history if new line
 	if ( line ) {
-		++working_line;
-		workingLimit( working_line );
+		++working_cur.line;
+		workingLimit( working_cur.line );
 	}
 	
 	// Calculate current working string checksum
 	std::size_t chk	= toCHK( working );
 	
 	// New line?
-	if ( working_line >= working_doc.data.size() ) {
+	if ( working_cur.line >= working_doc.data.size() ) {
 		working_doc.data.push_back( HX_LINE {
 			chk, 
 			true, 
-			working_line, 
+			working_cur.line, 
 			working, 
 			fmt
 		} );
 		
 	// Edited line
 	} else {
-		working_doc.data.at( working_line ) = 
+		working_doc.data.at( working_cur.line ) = 
 		HX_LINE {
 			chk, 
 			true, 
-			working_line, 
+			working_cur.line, 
 			working, 
 			fmt
 		};
@@ -158,6 +161,61 @@ Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
 }
 
 /**
+ *  Update cursor position within the limits of the working document
+ */
+void
+Editor::moveCursor( int x, int y ) {
+	std::size_t sz = working_doc.data.size();
+	if ( y < 0 ) {
+		// Move up to max
+		if ( 
+			working_cur.line > 0	&& 
+			( ( working_cur.line + y ) < sz )
+		) {
+			working_cur.line += y;
+		
+		// Set to max
+		} else {
+			working_cur.line = 0;
+		}
+	} else if ( y > 0) {
+		if ( ( working_cur.line + y ) < sz) {
+			working_cur.line += y;
+		} else {
+			working_cur.line = 0;
+		}
+	}
+	if ( x > 0 ) {
+		if ( ( working_cur.column + x ) < COL_SIZE ) {
+			working_cur.column += x;
+			
+		// Wrap down
+		} else {
+			moveCursor( 0, 1 );
+			working_cur.column	= 0;
+		}
+		
+	} else if ( x < 0 ) {
+		if ( ( working_cur.column + x ) > 0) {
+			working_cur.column += x;
+		
+		// Wrap up
+		} else {
+			moveCursor( 0, -1 );
+			working_cur.column = COL_SIZE;
+		}
+	}
+}
+void
+Editor::printCursor() {
+	printf( " %zu,%zu\n", 
+		working_cur.column, 
+		working_cur.line 
+	);
+				
+}
+
+/**
  *  Massive TODO: Text command selector
  */
 void
@@ -166,75 +224,109 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Basic movement
 		case M_UP: {
-			printf( "Move up\n" );
+			moveCursor( 0, -1 );
+			printf( "Move up" );
+			printCursor();
 			break;
 		}
 		case M_DOWN: {
-			printf( "Move down\n" );
+			moveCursor( 0, 1 );
+			printf( "Move down" );
+			printCursor();
 			break;
 		}
 		case M_LEFT: {
-			printf( "Move left\n" );
+			moveCursor( -1, 0 );
+			printf( "Move left" );
+			printCursor();
 			break;
 		}
 		case M_RIGHT: {
-			printf( "Move right\n" );
+			moveCursor( 1, 0 );
+			printf( "Move right" );
+			printCursor();
 			break;
 		}
 		
 		// Line movement
 		case M_LNSTART: {
-			printf( "Line start\n" );
+			working_cur.column = 0;
+			printf( "Line start" );
+			printCursor();
 			break;
 		}
 		case M_LNEND: {
-			printf( "Line end\n" );
+			working_cur.column = COL_SIZE - 1;
+			printf( "Line end" );
+			printCursor();
 			break;
 		}
 		
 		// Line crolling
 		case M_SCRLUP: {
-			printf( "Scroll up\n" );
+			moveCursor( 0, -SCRL_SIZE );
+			printf( "Scroll up" );
+			printCursor();
 			break;
 		}
+		
 		case M_SCRLDN: {
-			printf( "Scroll down\n" );
+			moveCursor( 0, SCRL_SIZE );
+			printf( "Scroll down" );
+			printCursor();
 			break;
 		}
 
 		// Pagination
 		case M_PGUP: {
-			printf( "Page up\n" );
+			moveCursor( 0, -PG_SIZE );
+			printf( "Page up" );
+			printCursor();
 			break;
 		}
 		case M_PGDN: {
-			printf( "Page down\n" );
+			moveCursor( 0, PG_SIZE );
+			printf( "Page down" );
+			printCursor();
 			break;
 		}
 		
 		// Document start/end
 		case M_DSTART: {
-			printf( "Document start\n" );
+			working_cur.line	= 0;
+			working_cur.column	= 0;
+			printf( "Document start" );
+			printCursor();
 			break;
 		}
 		case M_DEND: {
-			printf( "Document end\n" );
+			while( 
+				working_cur.line < 
+				( working_doc.data.size() - 1 ) 
+			) {
+				moveCursor( COL_SIZE, PG_SIZE );
+			}
+			printf( "Document end" );
+			printCursor();
 			break;
 		}
 		
 		// Text selections
 		case S_LEFT: {
-			printf( "Select left\n" );
+			printf( "Select left" );
+			printCursor();
 			break;
 		}
 		case S_RIGHT: {
-			printf( "Select right\n" );
+			printf( "Select right" );
+			printCursor();
 			break;
 		}
 		
 		// Find text
 		case T_QUERY: {
-			printf( "Query text\n" );
+			printf( "Query text" );
+			printCursor();
 			break;
 		}
 		
@@ -244,87 +336,101 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Delete left/right of cursor
 		case E_DELL: {
-			printf( "Delete left of cursor\n" );
+			printf( "Delete left of cursor" );
+			printCursor();
 			break;
 		}
 		case E_DELR: {
-			printf( "Delete right of cursor\n" );
+			printf( "Delete right of cursor" );
+			printCursor();
 			break;
 		}
 		
 		// Delete current word/line
 		case E_DELWD: {
-			printf( "Delete word\n" );
+			printf( "Delete word" );
+			printCursor();
 			break;
 		}
 		case E_DELLN: {
-			printf( "Delete line\n" );
+			printf( "Delete line" );
+			printCursor();
 			break;
 		}
 		
 		// Delete to start/end of line
 		case E_DELSL: {
-			printf( "Delete to start of this line\n" );
+			printf( "Delete to start of this line" );
+			printCursor();
 			break;
 		}
 		case E_DELEL: {
-			printf( "Delete to end of this line\n" );
+			printf( "Delete to end of this line" );
+			printCursor();
 			break;
 		}
 		
 		// Insert line break
 		case T_BREAK: {
 			//printf( "Insert break\n" );
-			working_str.append( "\n" );
 			syncInput( working_str, true );
 			break;
 		}
 		// Insert page break
 		case E_BREAK: {
-			printf( "Insert page break\n" );
+			printf( "Insert page break" );
 			syncInput( working_str, true );
+			printCursor();
 			break;
 		}
 		
 		// Copy to cliboard
 		case C_COPY: {
-			printf( "Copy selection to clipboard\n" );
+			printf( "Copy selection to clipboard" );
+			printCursor();
 			break;
 		}
 		case C_PASTE: {
-			printf( "Paste last copied selection\n" );
+			printf( "Paste last copied selection" );
+			printCursor();
 			break;
 		}
 		
 		// Insert memo
 		case P_MEMO: {
-			printf( "Insert memo to selection\n" );
+			printf( "Insert memo to selection" );
+			printCursor();
 			break;
 		}
 		
 		// Create subroutine
 		case P_PROG: {
-			printf( "Create or view subroutine\n" );
+			printf( "Create or view subroutine" );
+			printCursor();
 			break;
 		}
 		
 		// History undo/redo
 		case H_UNDO: {
-			printf( "Undo last action\n" );
+			printf( "Undo last action" );
+			printCursor();
 			break;
 		}
 		case H_REDO: {
-			printf( "Redo last action\n" );
+			printf( "Redo last action" );
+			printCursor();
 			break;
 		}
 		
 		// Document handling
 		case T_NEW: {
-			printf( "Create new document\n" );
+			printf( "Create new document" );
+			printCursor();
 			break;
 		}
 		case T_OPEN: {
-			printf( "Open existing document\n" );
+			printf( "Open existing document" );
+			printCursor();
 			
 			// Test sample document (need to work more)
 			//std::string oname = "samples/republic-plato.txt";
@@ -338,51 +444,61 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Indent
 		case T_INDENT: {
-			printf( "Increase indent text\n" );
+			printf( "Increase indent text" );
+			printCursor();
 			break;
 		}
 		case T_ODENT: {
-			printf( "Decrease indent text\n" );
+			printf( "Decrease indent text" );
+			printCursor();
 			break;
 		}
 
 		// Superscript/subscript
 		case T_SUP: {
-			printf( "Superscript text\n" );
+			printf( "Superscript text" );
+			printCursor();
 			break;
 		}
 		case T_SUB: {
-			printf( "Subscript text\n" );
+			printf( "Subscript text" );
+			printCursor();
 			break;
 		}
 
 		// Basic formatting
 		case T_BOLD: {
-			printf( "Bold text\n" );
+			printf( "Bold text" );
+			printCursor();
 			break;
 		}
 		case T_ITALIC: {
-			printf( "Italic text\n" );
+			printf( "Italic text" );
+			printCursor();
 			break;
 		}
 		case T_UNDER: {
-			printf( "Underline text\n" );
+			printf( "Underline text" );
+			printCursor();
 			break;
 		}
 		
 		// Return cursor
 		case M_CUR: {
-			printf( "Move cursor to previous position\n" );
+			printf( "Move cursor to previous position" );
+			printCursor();
 			break;
 		}
 		case M_LCUR: {
-			printf( "Move cursor to last position\n" );
+			printf( "Move cursor to last position" );
+			printCursor();
 			break;
 		}
 		
 		// Open clipboard ( use number keys to select )
 		case C_CLIP: {
-			printf( "Open clipboard\n" );
+			printf( "Open clipboard" );
+			printCursor();
 			break;
 		}
 	}
@@ -529,7 +645,7 @@ Editor::breakSegments(
 			working.erase( COL_SIZE );
 		}
 		
-		printf( "%s\n", working.c_str() );
+		//printf( "%s\n", working.c_str() );
 		
 		// Append working string to processed segments
 		segments.push_back( working );
@@ -702,7 +818,8 @@ Editor::extractLine(
 			extractFormat( block, fmt );
 		} else {
 			// Append as-is
-			extracted.append( block + SEG_DELIM );
+			extracted.append( block );
+			extracted.append( SEG_DELIM );
 		}
 		i++;
 	}
