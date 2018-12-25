@@ -196,6 +196,9 @@ class Huxley {
 		// Main event loop
 		bool	eventLoop( Editor &editor );
 		
+		// Check if input was modified
+		bool	isModified();
+		
 		// Notify if text has changed
 		void	notifyByTitle();
 		
