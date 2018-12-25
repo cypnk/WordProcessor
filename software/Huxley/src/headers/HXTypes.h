@@ -150,12 +150,6 @@
 #define FILE_TEXT	0x0002
 
 
-/**
- *  Helpers
- */
-#define ARRAY_SIZE( a ) \
-	( sizeof( a ) / sizeof( *( a ) ) )
-
 // Columns per screen
 #define COL_SIZE	72
 
@@ -164,6 +158,9 @@
 
 // End markers
 #define END_MKR		" ~!$%,.;。*\?+-=\t\r\f\n\\"
+
+// Space markers
+#define SPC_MKR		" \t\r\v\f\n"
 
 // Checksum format
 #define CHK_FORMAT	"%zx"
@@ -182,6 +179,8 @@
 
 // Line segment (checksum, formatting, text) delimiter
 #define SEG_DELIM	"\v"
+
+#define MARK_DELIM	"\uFFFF"
 
 // Line segment length 
 // Checksum + Formatting + Text data + 2 delimiters between each
@@ -287,5 +286,51 @@ RGB {
 	Uint8 G	= 0;
 	Uint8 A	= 1;
 };
+
+
+/**
+ *  Helpers
+ */
+#define ARRAY_SIZE( a ) \
+	( sizeof( a ) / sizeof( *( a ) ) )
+
+
+static inline void
+rtrim( std::string& str ) {
+	if ( str.size() == 0 ) {
+		return;
+	}
+	
+	// From the end
+	std::size_t last = str.find_last_of( SPC_MKR );
+	
+	// Space found?
+	if ( last != std::string::npos ) {
+		str.erase( last + 1 );
+	}
+}
+
+static inline void
+ltrim( std::string& str ) {
+	std::size_t sz	= str.size();
+	
+	if ( sz == 0 ) {
+		return;
+	}
+	// From the front
+	std::size_t first = str.find_first_of( SPC_MKR );
+	
+	// Space found?
+	if ( first != std::string::npos ) {
+		str	= str.substr( first, ( sz - first + 1 ) );
+	}
+}
+
+static inline void
+trim( std::string& str ) {
+	rtrim( str );
+	ltrim( str );
+}
+
 
 #endif
