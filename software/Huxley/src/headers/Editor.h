@@ -1,10 +1,8 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <cstring>
 #include <string>
 #include <iterator>
-#include <stdio.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
