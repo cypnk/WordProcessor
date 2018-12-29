@@ -1,6 +1,6 @@
 # System hardware options
 
-<table>  
+<table>
 	<tr><th>Communication &amp; Storage</th><th>Variants</th></tr>
 	<tr>
 		<td>ESP32</td>
@@ -13,6 +13,14 @@
 	<tr>
 		<td>STM32</td>
 		<td>STM32F407<br />STM32F427</td>
+	</tr>
+	<tr><th>Other systems</th><th>Notes</th></tr>
+	<tr>
+		<td>Orange PI Zero</td>
+		<td>AllWinner H2 SoC 256/512MB + OpenGL support.<br />
+		Combines all communication, keyboard-handling, <br />
+		and display functions at the cost of<br />
+		greatly increased power consumption.</td>
 	</tr>
 	<tr><th>Display</th><th>Notes</th></tr>
 	<tr>
