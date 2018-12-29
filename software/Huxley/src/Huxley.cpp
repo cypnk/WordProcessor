@@ -79,6 +79,22 @@ Huxley::resetRender( RGB bg_color ) {
 	// Refresh and display
 	SDL_RenderClear( RENDERER );
 	SDL_RenderPresent( RENDERER );
+	renderText();
+}
+
+/**
+ *  Render TEXTAREA
+ */
+void
+Huxley::renderText() {
+	int w	= 0; 
+	int h	= 0;
+	SDL_QueryTexture( TEXTAREA, NULL, NULL, &w, &h );
+	
+	// Change this to get a percentage of the full area
+	SDL_Rect box = { 0, 0, w, h };
+	SDL_RenderCopy( RENDERER, TEXTAREA, NULL, &box );
+	SDL_RenderPresent( RENDERER );
 }
 
 /**
@@ -113,13 +129,16 @@ Huxley::setupFont( RGB fg_color ) {
 		end( 1 );
 	}
 	
-	FONT	= TTF_OpenFont( FONT_FILE, FONT_SIZE );
+	FONT		= TTF_OpenFont( FONT_FILE, FONT_SIZE );
 	if ( !FONT ) {
 		printf( "TTF_OpenFont error: %s\n", TTF_GetError() );
 		end( 1 );
 	}
 	
-	FOREGROUND = { fg_color.R, fg_color.B, fg_color.G, 255 };
+	// Set foreground
+	SDL_Color fore	= { fg_color.R, fg_color.B, fg_color.G, 255 };
+	BODY		= TTF_RenderText_Solid( FONT, "Begin", fore );
+	TEXTAREA	= SDL_CreateTextureFromSurface( RENDERER, BODY );
 }
 
 /**
@@ -421,6 +440,8 @@ Huxley::end( int e ) {
 	TTF_Quit();
 	FONT		= NULL;
 	
+	SDL_DestroyTexture( TEXTAREA );
+	SDL_FreeSurface( BODY );
 	SDL_DestroyRenderer( RENDERER );
 	SDL_DestroyWindow( WINDOW );
 	SDL_Quit();
