@@ -336,6 +336,7 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Delete left/right of cursor
 		case E_DELL: {
+			moveCursor( -1, 0 );
 			printf( "Delete left of cursor" );
 			printCursor();
 			break;
