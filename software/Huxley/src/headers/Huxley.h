@@ -102,9 +102,10 @@ class Huxley {
 		 */
 		SDL_Window	*WINDOW;
 		SDL_Renderer	*RENDERER;
+		SDL_Surface	*BODY;
+		SDL_Texture	*TEXTAREA;
 		TTF_Font	*FONT;
 		RGB		BACKGROUND;
-		SDL_Color	FOREGROUND;
 
 		Uint32 		WINDOW_FLAGS	= 
 					SDL_WINDOW_RESIZABLE |
@@ -153,6 +154,7 @@ class Huxley {
 		 */
 		void	resetRender( RGB bg_color );
 		void	setupFont( RGB fb_color );
+		void	renderText();
 		
 		/**
 		 *  Window resizing, repositioning, etc...
