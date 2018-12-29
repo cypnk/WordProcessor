@@ -27,7 +27,7 @@
  *  Default font settings
  */
 #define FONT_FILE	"bin/assets/fonts/NotoSansMono-Regular.ttf"
-#define FONT_SIZE	11
+#define FONT_SIZE	13
 
 /**
  *  Main event loop delay
