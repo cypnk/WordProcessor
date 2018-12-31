@@ -87,7 +87,7 @@ class Editor {
 		);
 		
 		/**
-		 *  Separatator detection
+		 *  Separator detection
 		 */
 		static bool	isBreak( int c );
 		static bool	isSpace( const char* c );
@@ -181,6 +181,16 @@ class Editor {
 		
 		// Select lines from raw input and sync sentence
 		void	syncLine();
+		
+		/**
+		 *  Editing functions
+		 */
+		// Delete left of cursor
+		void	delLeft( int x );
+		
+		// Delete right of cursor
+		void	delRight( int x );
+		
 	public:
 		Editor( unsigned char key_map );
 		
