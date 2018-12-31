@@ -43,15 +43,16 @@ Huxley::Huxley( const char* title, int width, int height ) {
 	// Create renderer
 	RENDERER	= SDL_CreateRenderer( WINDOW, -1, 0 );
 	
-	// Set program defaults ( paper background, coal foreground )
+	// Set program defaults
 	BACKGROUND	= COLORS.paper;
-	setupFont( COLORS.coal );
+	setupFont( COLORS.graphite );
 	
 	// Start text input
 	SDL_StartTextInput();
 	
 	// Render window background
 	refresh();
+	SDL_RenderClear( RENDERER );
 	
 	// Nothing typed
 	modified	= false;
@@ -77,24 +78,103 @@ Huxley::resetRender( RGB bg_color ) {
 	);
 	
 	// Refresh and display
-	SDL_RenderClear( RENDERER );
 	SDL_RenderPresent( RENDERER );
-	renderText();
 }
 
 /**
- *  Render TEXTAREA
+ *  Context and line sensitive printing
  */
 void
-Huxley::renderText() {
-	int w	= 0; 
-	int h	= 0;
-	SDL_QueryTexture( TEXTAREA, NULL, NULL, &w, &h );
+Huxley::renderText( 
+	SDL_Texture	*textarea,
+	HX_CURSOR	&cursor
+) {	
+	int w, h;
+	SDL_QueryTexture( textarea, NULL, NULL, &w, &h );
 	
-	// Change this to get a percentage of the full area
-	SDL_Rect box = { 0, 0, w, h };
-	SDL_RenderCopy( RENDERER, TEXTAREA, NULL, &box );
+	int column	= static_cast<int>( cursor.column );
+	int line	= static_cast<int>( cursor.line );
+	
+	printf( "%d, %d\n", column, line );
+	int x		= w * ( column + 1 );
+	int y		= h * ( line + 1 );
+	
+	// Clean space
+	SDL_SetRenderDrawColor(
+		RENDERER, BACKGROUND.R, BACKGROUND.B, BACKGROUND.G, 255 
+	);
+	SDL_Rect bg		= { x, y, w, h };
+	SDL_RenderFillRect( RENDERER, &bg );
+	
+	// New text
+	SDL_Rect box	= { x, y, w, h };
+	SDL_RenderCopy( RENDERER, textarea, NULL, &box );
 	SDL_RenderPresent( RENDERER );
+}
+
+void
+Huxley::cacheSymbol( std::size_t idx, const char* c ) {
+	// Create fresh sufrace
+	SDL_Surface *text	= 
+	TTF_RenderUTF8_Blended( FONT, c, COLOR );
+	
+	// Create cache
+	CACHE	item = {
+		idx,
+		SDL_CreateTextureFromSurface( RENDERER, text )
+	};
+	SYMBOLS.push_back( item );
+	SDL_FreeSurface( text );
+}
+
+bool
+Huxley::printFromCache( std::size_t idx, HX_CURSOR& cursor ) {
+	for ( 
+		std::vector<CACHE>::iterator st = 
+			SYMBOLS.begin(); 
+		st != SYMBOLS.end();
+		++st
+	) {
+		if ( idx == ( *st ).idx ) {
+			// Render input at cursor
+			renderText( ( *st ).symbol, cursor );
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+// https://gamedev.stackexchange.com/a/46291
+// Get the current line position and only render that line
+
+// Window scrolling and replacing previous with filled rect
+// https://stackoverflow.com/questions/40682152/sdl2-converting-sdl1-2-code-in-c-how-to-scroll-a-window-previously-sdl-blitsur
+void
+Huxley::renderInput( Editor &editor ) {
+	// Fix editor cursor issue
+	std::string	working;
+	HX_CURSOR	cursor;
+	
+	editor.getWorking( cursor, working );
+	// Nothing to render yet
+	if ( !working.size() ) {
+		return;
+	}
+	
+	// Last typed character
+	const char* c = working.c_str() + working.size() - 1;
+	std::string tmp(c);
+	
+	// Create symbol search index
+	std::size_t idx = std::hash<std::string>{}( tmp );
+	
+	// Symbol found and printed?
+	if ( printFromCache( idx, cursor ) ) {
+		return;
+	}
+	cacheSymbol( idx, tmp.c_str() );
+	printFromCache( idx, cursor );
 }
 
 /**
@@ -114,8 +194,7 @@ Huxley::notifyByTitle() {
 	if ( modified ) {
 		std::string newtitle( WINDOW_TITLE );
 		newtitle.append( "*" );
-		SDL_SetWindowTitle( WINDOW, newtitle.c_str() );	
-		modified = false;
+		SDL_SetWindowTitle( WINDOW, newtitle.c_str() );
 	}
 }
 
@@ -136,9 +215,14 @@ Huxley::setupFont( RGB fg_color ) {
 	}
 	
 	// Set foreground
-	SDL_Color fore	= { fg_color.R, fg_color.B, fg_color.G, 255 };
-	BODY		= TTF_RenderText_Solid( FONT, "Begin", fore );
-	TEXTAREA	= SDL_CreateTextureFromSurface( RENDERER, BODY );
+	COLOR	= { fg_color.R, fg_color.B, fg_color.G, 255 };
+	
+	//BODY		= TTF_RenderUTF8_Blended( FONT, "Begin", COLOR );
+	//if ( !BODY ) {
+	//	printf( "TTF_RenderText_Blended: %s\n", TTF_GetError() );
+	//	end( 1 );
+	//}
+	//TEXTAREA	= SDL_CreateTextureFromSurface( RENDERER, BODY );
 }
 
 /**
@@ -256,6 +340,7 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 	if ( event.type == SDL_TEXTINPUT  ) {
 		// Capture text input
 		editor.sendInput( event.text.text, 0, 0 );
+		renderInput( editor );
 		modified = true;
 		
 	} else if ( event.type == SDL_TEXTEDITING ) {
@@ -266,6 +351,40 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 			event.edit.length
 		);
 	}
+}
+
+
+bool
+Huxley::editKey( SDL_Keycode code ) {
+	if (
+		code		== SDLK_RETURN		|| 
+		code		== SDLK_TAB		|| 
+		code		== SDLK_BACKSPACE	|| 
+		code		== SDLK_DELETE
+	) {
+		// Also set modified
+		modified	= true;
+		return true;
+	}
+	return false;
+}
+
+bool
+Huxley::movementKey( SDL_Keycode code ) {
+	if (
+		code		== SDLK_UP		|| 
+		code		== SDLK_DOWN		|| 
+		code		== SDLK_LEFT		|| 
+		code		== SDLK_RIGHT		|| 
+		code		== SDLK_HOME		|| 
+		code		== SDLK_END		|| 
+		code		== SDLK_PAGEUP		|| 
+		code		== SDLK_PAGEDOWN
+	) {
+		return true;
+	}
+	
+	return false;
 }
 
 /**
@@ -346,18 +465,7 @@ Huxley::handleKeyEvents( SDL_Event &event, Editor &editor ) {
 		
 	// Navigation or special editing?
 	} else if (
-		code		== SDLK_UP		|| 
-		code		== SDLK_DOWN		|| 
-		code		== SDLK_LEFT		|| 
-		code		== SDLK_RIGHT		|| 
-		code		== SDLK_HOME		|| 
-		code		== SDLK_END		|| 
-		code		== SDLK_PAGEUP		|| 
-		code		== SDLK_PAGEDOWN	|| 
-		code		== SDLK_RETURN		|| 
-		code		== SDLK_TAB		|| 
-		code		== SDLK_BACKSPACE	|| 
-		code		== SDLK_DELETE
+		editKey( code ) || movementKey( code )
 	) {
 		editor.sendCombo( ctrl_key.any, shift_key.any, code );
 	
@@ -435,13 +543,21 @@ Huxley::end( int e ) {
 	// End text input
 	SDL_StopTextInput();
 	
+	// Clean symbol cache
+	for ( 
+		std::vector<CACHE>::iterator it = 
+			SYMBOLS.begin(); 
+		it != SYMBOLS.end();
+		++it
+	) {
+		SDL_DestroyTexture( ( *it ).symbol );
+	}
+	
 	// Clean font
 	TTF_CloseFont( FONT );
 	TTF_Quit();
 	FONT		= NULL;
 	
-	SDL_DestroyTexture( TEXTAREA );
-	SDL_FreeSurface( BODY );
 	SDL_DestroyRenderer( RENDERER );
 	SDL_DestroyWindow( WINDOW );
 	SDL_Quit();
@@ -450,8 +566,8 @@ Huxley::end( int e ) {
 	WINDOW		= NULL;
 	
 	// Do something with these (maybe profile settings?)
-	printf( "Last window size %d x %d\n", status.w, status.h );
-	printf( "Last window position %d, %d\n", status.x, status.y );
+	//printf( "Last window size %d x %d\n", status.w, status.h );
+	//printf( "Last window position %d, %d\n", status.x, status.y );
 	
 	exit( e );
 }
@@ -497,6 +613,7 @@ Huxley::eventLoop( Editor &editor ) {
 				return false;
 			}
 		}
+		
 	}
 	
 	return true;
@@ -527,19 +644,27 @@ Huxley::dumpParams( CMD_PARAM& param ) {
 
 /**
  *  Get command line arguments and push to holding vector
+ *  -k Keyboard layout
+ *  -f File name to create/edit
+ *  -d Text direction rtl, ltr, tdl, tdr
+ *  -p Page flip direction td, lr, rl
+ *  
+ *  Cursor position and internal representation of a "line" is 
+ *  orthogonal to the way text internally represented, the way it's 
+ *  stored in a file and the way it is shown to the user
  */
 void
 Huxley::parseParams( int argc, char* argv[] ) {
 	CMD_PARAM param;
-	std::string	raw;
+	std::string	rawparams;
 	for ( int i = 0; i < argc; ++i ) {
-		raw = std::string( argv[i] );
+		rawparams = std::string( argv[i] );
 		
 		// If this is an option ( starts with dash )
-		if ( raw[0] == '-' ) {
+		if ( rawparams[0] == '-' ) {
 			// Not just dash?
-			if ( raw.size() > 1 ) {
-				param.opt = raw;
+			if ( rawparams.size() > 1 ) {
+				param.opt = rawparams;
 				
 			// Invalid option. Start again with next param
 			} else {
@@ -555,7 +680,7 @@ Huxley::parseParams( int argc, char* argv[] ) {
 				dumpParams( param );
 				continue;
 			} else {
-				param.value = raw;
+				param.value = rawparams;
 			}
 		}
 		
