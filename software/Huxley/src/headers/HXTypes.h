@@ -22,12 +22,30 @@
  *  Keyboard map type
  */
 #define	MAP_QWERTY	0x0000	// Only QWERTY for now
+#define MAP_DVORAK	0x0001
+#define MAP_COLEMAK	0x0002
+
 
 /**
  *  Default font settings
  */
 #define FONT_FILE	"bin/assets/fonts/NotoSansMono-Regular.ttf"
 #define FONT_SIZE	13
+
+/**
+ *  Default text direction
+ */
+#define TEXT_LTR	0x0000	// Left to right
+#define TEXT_RTL	0x0001	// Right to left
+#define TEXT_TDL	0x0002	// Top to bottom, left to right
+#define TEXT_TDR	0x0003	// Top to bottom, right to left
+
+/**
+ *  Page turn direction
+ */
+#define PAGE_TD		0x0000	// Top to down
+#define PAGE_LR		0x0001	// Left to right
+#define PAGE_RL		0x0002	// Right to left
 
 /**
  *  Main event loop delay
