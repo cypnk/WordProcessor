@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <unordered_map>
 #include <random>
-#include <chrono>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Editor.h"
@@ -81,19 +80,13 @@ COLORS {
 	RGB asbestos	{ 127, 140, 141, 1 };
 } COLORS;
 
-/**
- *  Cursor
- */
-/*
-float
-CUR_TIMER	= 1.0f;
 
-float
-CUR_BLINK	= 2.0f;
-
-SDL_Rect 
-CURSOR		= { 200, 200, 10, 20 };
-*/
+// Symbol cache item
+struct
+CACHE {
+	std::size_t	idx;
+	SDL_Texture	*symbol;
+};
 
 class Huxley {
 	private:
@@ -102,11 +95,15 @@ class Huxley {
 		 */
 		SDL_Window	*WINDOW;
 		SDL_Renderer	*RENDERER;
-		SDL_Surface	*BODY;
-		SDL_Texture	*TEXTAREA;
 		TTF_Font	*FONT;
+		SDL_Color	COLOR;
+		
+		// Render cache
+		std::vector<CACHE>
+		SYMBOLS;
+		
 		RGB		BACKGROUND;
-
+		
 		Uint32 		WINDOW_FLAGS	= 
 					SDL_WINDOW_RESIZABLE |
 					SDL_WINDOW_ALLOW_HIGHDPI;
@@ -114,10 +111,17 @@ class Huxley {
 		
 		// Document modified since opening
 		bool		modified;
+		bool		
+		printFromCache( 
+			std::size_t	idx, 
+			HX_CURSOR&	cursor
+		);
 		
-		// Render 
-		//std::unordered_map<SDL_Keycode, SDL_Texture> 
-		//	SYMBOL_CACHE;
+		void
+		cacheSymbol( 
+			std::size_t	idx, 
+			const char*	c
+		);
 		
 		/**
 		 *  Special key input states
@@ -154,7 +158,18 @@ class Huxley {
 		 */
 		void	resetRender( RGB bg_color );
 		void	setupFont( RGB fb_color );
-		void	renderText();
+		void	
+		renderText(
+			SDL_Texture	*textarea,
+			HX_CURSOR&	cursor
+		);
+		void	renderInput( Editor& editor );
+		
+		/**
+		 *  Determine if key pressed is movement or edit
+		 */
+		bool	movementKey( SDL_Keycode code );
+		bool	editKey( SDL_Keycode code );
 		
 		/**
 		 *  Window resizing, repositioning, etc...
