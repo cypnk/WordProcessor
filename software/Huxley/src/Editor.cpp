@@ -32,8 +32,20 @@ Editor::workingLimit( std::size_t& index ) {
 	std::size_t sz	= working_doc.data.size();
 	
 	if ( index > sz ) {
-		index	= ( sz == 0 ) ? 0 : sz - 1;
+		index	= ( sz == 0 ) ? sz : sz - 1;
 	}
+}
+
+/**
+ *  Get current working string and index
+ */
+void
+Editor::getWorking(
+	HX_CURSOR&	cur,
+	std::string& 	working
+) {
+	working		= working_str;
+	cur		= working_cur;
 }
 
 /**
@@ -57,8 +69,7 @@ Editor::syncInput( std::string& working, bool line ) {
 	
 	// TODO: Format sync history if new line
 	if ( line ) {
-		++working_cur.line;
-		workingLimit( working_cur.line );
+		moveCursor( 0, 1 );
 	}
 	
 	// Calculate current working string checksum
@@ -73,6 +84,7 @@ Editor::syncInput( std::string& working, bool line ) {
 			working, 
 			fmt
 		} );
+		working_cur.line = working_doc.data.size();
 		
 	// Edited line
 	} else {
@@ -134,6 +146,7 @@ Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 	} else {
 		INPUT_ACTIVE = false;
 		working_str.append( edit );
+		moveCursor( 1, 0 );
 	}
 	
 	// Start a new line if we're at the limit
@@ -166,53 +179,35 @@ Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
 void
 Editor::moveCursor( int x, int y ) {
 	std::size_t sz = working_doc.data.size();
-	if ( y < 0 ) {
-		// Move up to max
-		if ( 
-			working_cur.line > 0	&& 
-			( ( working_cur.line + y ) < sz )
-		) {
-			working_cur.line += y;
-		
-		// Set to max
-		} else {
-			working_cur.line = 0;
-		}
-	} else if ( y > 0) {
-		if ( ( working_cur.line + y ) < sz) {
-			working_cur.line += y;
-		} else {
-			working_cur.line = 0;
-		}
+	
+	working_cur.column	+= x;
+	
+	// Wrap down?
+	if ( ( working_cur.column + x ) > COL_SIZE ) {
+		++working_cur.line;
+		working_cur.column = 0;
 	}
-	if ( x > 0 ) {
-		if ( ( working_cur.column + x ) < COL_SIZE ) {
-			working_cur.column += x;
-			
-		// Wrap down
-		} else {
-			moveCursor( 0, 1 );
-			working_cur.column	= 0;
-		}
-		
-	} else if ( x < 0 ) {
-		if ( ( working_cur.column + x ) > 0) {
-			working_cur.column += x;
-		
-		// Wrap up
-		} else {
-			moveCursor( 0, -1 );
-			working_cur.column = COL_SIZE;
-		}
+	
+	// Nothing else to do
+	if ( y == 0 ) {
+		return;
+	}
+	
+	working_cur.line	+= y;
+	
+	// Wrap up?
+	if ( working_cur.line > ( sz + PG_SIZE ) ) {
+		working_cur.line = 0;
 	}
 }
+
+
 void
 Editor::printCursor() {
 	printf( " %zu,%zu\n", 
 		working_cur.column, 
 		working_cur.line 
 	);
-				
 }
 
 /**
