@@ -69,7 +69,8 @@ Editor::syncInput( std::string& working, bool line ) {
 	
 	// TODO: Format sync history if new line
 	if ( line ) {
-		moveCursor( 0, 1 );
+		++working_cur.line;
+		working_cur.column = 0;
 	}
 	
 	// Calculate current working string checksum
@@ -194,10 +195,15 @@ Editor::moveCursor( int x, int y ) {
 	}
 	
 	working_cur.line	+= y;
+	working_cur.column	= 0;
 	
 	// Wrap up?
 	if ( working_cur.line > ( sz + PG_SIZE ) ) {
 		working_cur.line = 0;
+	}
+	
+	if ( working_cur.line > ( sz + 1 ) ) {
+		working_cur.line = sz;
 	}
 }
 
@@ -211,6 +217,29 @@ Editor::printCursor() {
 }
 
 /**
+ *  Commands
+ */
+
+/**
+ *  Delete left of cursor
+ */
+void
+Editor::delLeft( int x ) {
+	std::size_t sz	= working_str.size();
+	
+	// Just one space?
+	if ( sz > 1  && x == 1 ) {
+		working_str.pop_back();
+	} else if ( sz > 1 ) {
+		// TODO: Calculate and move deletions up
+	}
+	
+	moveCursor( -x, 0 );
+	printf( "Delete left of cursor" );
+	printCursor();
+}
+
+/**
  *  Massive TODO: Text command selector
  */
 void
@@ -221,6 +250,8 @@ Editor::applyCommand( unsigned char action ) {
 		case M_UP: {
 			moveCursor( 0, -1 );
 			printf( "Move up" );
+			// Change working string to current line content
+			
 			printCursor();
 			break;
 		}
@@ -331,9 +362,7 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Delete left/right of cursor
 		case E_DELL: {
-			moveCursor( -1, 0 );
-			printf( "Delete left of cursor" );
-			printCursor();
+			delLeft( 1 );
 			break;
 		}
 		case E_DELR: {
