@@ -95,15 +95,12 @@ class Editor {
 		/**
 		 *  Content chunking
 		 */
-		static void
+		void
 		breakSegments( 
 			std::string&			working, 
 			std::vector<std::string>&	segments,
 			bool				append	= false
 		);
-		
-		// Testing
-		void	printCursor();
 		
 		/**
 		 *  Flags
@@ -191,6 +188,15 @@ class Editor {
 		
 		// Append working string to document
 		void	sync();
+		
+		void
+		getWorking(
+			HX_CURSOR&	cur,
+			std::string& 	working
+		);
+		
+		// Testing
+		void	printCursor();
 		
 		// Checksum passed
 		bool			good	= true;
