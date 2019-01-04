@@ -16,6 +16,31 @@
 #define	CHK_C		90173
 
 
+
+/**
+ *  Client input handling
+ */
+// Generate checksum from string
+constexpr std::size_t
+TO_CHK( const char* str ) {
+	std::size_t chk	= 0;
+	while( *str ) {
+		chk = ( chk * CHK_A ) ^ ( str[0] * CHK_B );
+		str++;
+	}
+	return chk % CHK_C;
+}
+
+// Copy checksum to char array
+constexpr void 
+COPY_CHK(
+	char*			check,
+	std::size_t&		chk
+) {
+	snprintf( check, CHK_SIZE, CHK_FORMAT, chk );	
+}
+
+
 class Editor {
 	private:
 		
@@ -32,10 +57,14 @@ class Editor {
 		int working_map				= 0;
 		
 		// Current location being edited
-		HX_CURSOR working_cur			= { 0, 0 };
+		HX_CURSOR working_cur;
+		
+		// Current working line
+		HX_LINE working_line;
 		
 		// Current working input
 		std::string working_str;
+		
 		
 		bool caps				= false;
 		
@@ -62,9 +91,6 @@ class Editor {
 		/**
 		 *  Client input handling
 		 */
-				// Generate checksum from string
-		static std::size_t
-		toCHK( std::string& line );
 		
 		static int 
 		endsWith(
@@ -100,6 +126,15 @@ class Editor {
 			std::string&			working, 
 			std::vector<std::string>&	segments,
 			bool				append	= false
+		);
+		
+		// Set the working string to the current line
+		void		setWorking();
+		void		
+		syncMoveSet(
+			int	x, 
+			int	y, 
+			bool	line = false 
 		);
 		
 		/**
@@ -143,7 +178,6 @@ class Editor {
 		void
 		segmentsToLine( 
 			std::vector<std::string>&	segments, 
-			std::size_t&			index,
 			std::size_t&			chk,
 			std::vector<HX_FORMAT>&		fmt,
 			HX_FILE& 			dest
@@ -151,7 +185,6 @@ class Editor {
 		void
 		segmentsToFile( 
 			std::vector<std::string>&	segments, 
-			std::size_t&			index,
 			std::size_t&			chk,
 			std::vector<HX_FORMAT>&		fmt,
 			HX_FILE& 			dest
@@ -175,9 +208,11 @@ class Editor {
 		// Add last input phrase to history
 		void
 		syncInput( 
+			HX_LINE&	line,
 			std::string&	working, 
-			bool 		line	= false )
-		;
+			bool 		nline	= false, 
+			bool		pg	= false
+		);
 		
 		// Select lines from raw input and sync sentence
 		void	syncLine();
@@ -192,13 +227,14 @@ class Editor {
 		void	delRight( int x );
 		
 	public:
-		Editor( unsigned char key_map );
+		Editor();
 		
 		void	capslock();
 		
 		// Append working string to document
 		void	sync();
 		
+		// Get the current working string and cursor position
 		void
 		getWorking(
 			HX_CURSOR&	cur,
@@ -211,6 +247,9 @@ class Editor {
 		// Checksum passed
 		bool			good	= true;
 		
+		// Document loaded
+		bool			loaded	= false;
+		
 		// Open a given filename as a Huxley document
 		void	cmdOpen( std::string& fname );
 		
@@ -219,6 +258,12 @@ class Editor {
 		
 		// Get the line at given index
 		void	lineAt( std::size_t& index, HX_LINE& line );
+		
+		// Get the current working document
+		void	docAt( HX_FILE& doc );
+		
+		// Set keyboard map
+		void	setKeyMap( unsigned char key_map );
 		
 		// Receive keyboard input
 		void
