@@ -30,7 +30,7 @@ LD_FLAGS	?= -Wl,-Bstatic
 
 # C++ Flags
 CXXFLAGS	?= $(INC_FLAGS) -MMD -MP -Wall -Wextra -Wconversion \
--Wunreachable-code -Wshadow -Werror -pedantic -std=c++17 -Os
+-Wunreachable-code -Wshadow -Werror -pedantic -std=c++17 -O2
 
 
 $(BIN_DIR)/$(TARGET): $(OBJS)
