@@ -54,6 +54,10 @@ Huxley::Huxley( const char* title, int width, int height ) {
 	refresh();
 	SDL_RenderClear( RENDERER );
 	
+	// Cache the cursor and clear symbols at index 0 and 1
+	cacheSymbol( CUR_SYMBOL );
+	cacheSymbol( CLR_SYMBOL );
+	
 	// Nothing typed
 	modified	= false;
 }
@@ -81,27 +85,21 @@ Huxley::resetRender( RGB bg_color ) {
 	SDL_RenderPresent( RENDERER );
 }
 
-/**
- *  Context and line sensitive printing
- */
 void
-Huxley::renderText( 
-	SDL_Texture	*textarea,
-	HX_CURSOR	&cursor
+Huxley::cleanWrite( 
+	int&		x, 
+	int&		y, 
+	int&		w,
+	int&		h, 
+	SDL_Texture	*textarea 
 ) {	
-	int w, h;
-	SDL_QueryTexture( textarea, NULL, NULL, &w, &h );
-	
-	int column	= static_cast<int>( cursor.column );
-	int line	= static_cast<int>( cursor.line );
-	
-	printf( "%d, %d\n", column, line );
-	int x		= w * ( column + 1 );
-	int y		= h * ( line + 1 );
-	
 	// Clean space
 	SDL_SetRenderDrawColor(
-		RENDERER, BACKGROUND.R, BACKGROUND.B, BACKGROUND.G, 255 
+		RENDERER, 
+		BACKGROUND.R, 
+		BACKGROUND.B, 
+		BACKGROUND.G, 
+		255 
 	);
 	SDL_Rect bg		= { x, y, w, h };
 	SDL_RenderFillRect( RENDERER, &bg );
@@ -112,9 +110,19 @@ Huxley::renderText(
 	SDL_RenderPresent( RENDERER );
 }
 
+/**
+ *  Cache a given chacter as a symbol
+ *  TODO: Handle bold/italic etc... and highlighted text
+ */
 void
-Huxley::cacheSymbol( std::size_t idx, const char* c ) {
-	// Create fresh sufrace
+Huxley::cacheSymbol( const char* c ) {
+	// Already cached index?
+	std::size_t idx;
+	if ( CACHED_CHAR( SYMBOLS, c, idx ) ) {
+		return;
+	}
+	
+	// Create fresh surface
 	SDL_Surface *text	= 
 	TTF_RenderUTF8_Blended( FONT, c, COLOR );
 	
@@ -127,8 +135,68 @@ Huxley::cacheSymbol( std::size_t idx, const char* c ) {
 	SDL_FreeSurface( text );
 }
 
+
+/**
+ *  Context and line sensitive printing
+ */
+void
+Huxley::renderText( 
+	SDL_Texture	*textarea,
+	std::size_t&	col,
+	std::size_t&	ln
+) {
+	int x, y, w, h, column, line;
+	SDL_QueryTexture( textarea, NULL, NULL, &w, &h );
+	
+	// Workaround for SDL_Rect, which only takes Int
+	column	= static_cast<int>( col );
+	line	= static_cast<int>( ln );
+	
+	// Render character based on text direction
+	switch( TEXT_DIR ) {
+		// Top to bottom, left to right
+		case TEXT_TDL: {
+			x = h * ( line + 1 );
+			y = w * ( column + 1 );
+			break;
+		}
+		
+		// Top to bottom, right to left
+		case TEXT_TDR: {
+			x = COL_SIZE - ( h * ( line + 1 ) );
+			y = w * ( column + 1 );
+			break;
+		}
+		
+		// Right to left
+		case TEXT_RTL: {
+			x = COL_SIZE - ( w * ( column + 1 ) ) ;
+			y = h * ( line + 1 );
+			break;
+		}
+		
+		// Left to right
+		default: {
+			x = w * ( column + 1 );
+			y = h * ( line + 1 );
+		}
+	}
+	
+	// printf( "%d, %d\n", column, line );
+	cleanWrite( x, y, w, h, textarea );
+}
+
+/**
+ *  Send cached texture to be rendered on screen
+ */
 bool
-Huxley::printFromCache( std::size_t idx, HX_CURSOR& cursor ) {
+Huxley::printFromCache(
+	const char*	c,
+	std::size_t&	col,
+	std::size_t&	ln
+) {
+	std::size_t idx = SYMBOL_HASH( c );
+	
 	for ( 
 		std::vector<CACHE>::iterator st = 
 			SYMBOLS.begin(); 
@@ -137,7 +205,7 @@ Huxley::printFromCache( std::size_t idx, HX_CURSOR& cursor ) {
 	) {
 		if ( idx == ( *st ).idx ) {
 			// Render input at cursor
-			renderText( ( *st ).symbol, cursor );
+			renderText( ( *st ).symbol, col, ln );
 			return true;
 		}
 	}
@@ -145,37 +213,26 @@ Huxley::printFromCache( std::size_t idx, HX_CURSOR& cursor ) {
 	return false;
 }
 
-// https://gamedev.stackexchange.com/a/46291
-// Get the current line position and only render that line
-
-// Window scrolling and replacing previous with filled rect
-// https://stackoverflow.com/questions/40682152/sdl2-converting-sdl1-2-code-in-c-how-to-scroll-a-window-previously-sdl-blitsur
 void
 Huxley::renderInput( Editor &editor ) {
-	// Fix editor cursor issue
+	// TODO: Fix editor cursor issue
 	std::string	working;
 	HX_CURSOR	cursor;
+	HX_LINE		line;
 	
 	editor.getWorking( cursor, working );
+	
 	// Nothing to render yet
 	if ( !working.size() ) {
 		return;
 	}
 	
-	// Last typed character
-	const char* c = working.c_str() + working.size() - 1;
-	std::string tmp(c);
-	
-	// Create symbol search index
-	std::size_t idx = std::hash<std::string>{}( tmp );
-	
-	// Symbol found and printed?
-	if ( printFromCache( idx, cursor ) ) {
-		return;
+	// Print working line at the cursor index
+	for ( std::size_t i = 0; i < working.length(); ++i ) {
+		printFromCache( &working[i], i, cursor.line );
 	}
-	cacheSymbol( idx, tmp.c_str() );
-	printFromCache( idx, cursor );
 }
+
 
 /**
  *  Redraw and refresh
@@ -216,13 +273,6 @@ Huxley::setupFont( RGB fg_color ) {
 	
 	// Set foreground
 	COLOR	= { fg_color.R, fg_color.B, fg_color.G, 255 };
-	
-	//BODY		= TTF_RenderUTF8_Blended( FONT, "Begin", COLOR );
-	//if ( !BODY ) {
-	//	printf( "TTF_RenderText_Blended: %s\n", TTF_GetError() );
-	//	end( 1 );
-	//}
-	//TEXTAREA	= SDL_CreateTextureFromSurface( RENDERER, BODY );
 }
 
 /**
@@ -338,9 +388,10 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 	
 	// TODO: Handle buffer input E.G. AltGr
 	if ( event.type == SDL_TEXTINPUT  ) {
-		// Capture text input
+		
 		editor.sendInput( event.text.text, 0, 0 );
-		renderInput( editor );
+		cacheSymbol( event.text.text );
+		
 		modified = true;
 		
 	} else if ( event.type == SDL_TEXTEDITING ) {
@@ -350,6 +401,7 @@ Huxley::handleKeyInput( SDL_Event &event, Editor &editor ) {
 			event.edit.start, 
 			event.edit.length
 		);
+		cacheSymbol( event.edit.text );
 	}
 }
 
@@ -604,6 +656,9 @@ Huxley::eventLoop( Editor &editor ) {
 			case SDL_KEYUP:
 			case SDL_TEXTINPUT: {
 				handleKeyEvents( event, editor );
+				
+				// Render any changed input
+				renderInput( editor );
 				break;
 			}
 			
@@ -615,7 +670,6 @@ Huxley::eventLoop( Editor &editor ) {
 		}
 		
 	}
-	
 	return true;
 }
 
@@ -651,7 +705,7 @@ Huxley::dumpParams( CMD_PARAM& param ) {
  *  
  *  Cursor position and internal representation of a "line" is 
  *  orthogonal to the way text internally represented, the way it's 
- *  stored in a file and the way it is shown to the user
+ *  stored in a file, and the way it is shown to the user
  */
 void
 Huxley::parseParams( int argc, char* argv[] ) {
@@ -664,7 +718,7 @@ Huxley::parseParams( int argc, char* argv[] ) {
 		if ( rawparams[0] == '-' ) {
 			// Not just dash?
 			if ( rawparams.size() > 1 ) {
-				param.opt = rawparams;
+				param.opt = rawparams.substr( 1 );
 				
 			// Invalid option. Start again with next param
 			} else {
@@ -699,6 +753,84 @@ Huxley::parseParams( int argc, char* argv[] ) {
 }
 
 /**
+ *  Set text rendering direction
+ */
+void
+Huxley::setDirection() {
+	// Set text direction ( default to "left to right" )
+	std::size_t dir = 
+	SYMBOL_HASH( CMD_FIND( "d", "ltr", parameters ).c_str() );
+	
+	switch ( dir ) {
+		case SYMBOL_HASH( "tdr" ) : {
+			TEXT_DIR	= TEXT_TDR;
+			break;
+		}
+		
+		case SYMBOL_HASH( "tdl" ) : {
+			TEXT_DIR	= TEXT_TDL;
+			break;
+		}
+		
+		case SYMBOL_HASH( "rtl" ): {
+			TEXT_DIR	= TEXT_RTL;
+			break;
+		}
+		
+		default: {
+			TEXT_DIR	= TEXT_LTR;
+		}
+	}
+}
+
+/**
+ *  Set the working file
+ */
+void
+Huxley::setFile( Editor& editor ) {
+	// Set file to be opened or create a random filename
+	std::string fname	= CMD_FIND( "f", "", parameters );
+	
+	// Working directory
+	working_fname		= "samples/";
+	
+	// Create a random filename if no name was specified
+	if ( fname.empty() ) {
+		rndFile( working_fname );
+	} else {
+		// Open existing document
+		working_fname.append( fname );
+		editor.cmdOpen( working_fname );
+		
+		// TODO: Render file contents
+	}
+}
+
+void
+Huxley::setKeyMap( Editor& editor ) {
+	// TODO: Map the other keyboard types
+	std::size_t key = 
+	SYMBOL_HASH( CMD_FIND( "k", "qwerty", parameters ).c_str() );
+	
+	switch ( key ) {
+		default: {
+			editor.setKeyMap( MAP_QWERTY );
+		}
+	}
+}
+
+/**
+ *  Set editing parameters
+ */
+void
+Huxley::setParams( Editor& editor ) {
+	setDirection();
+	
+	setKeyMap( editor );
+	setFile( editor );
+}
+
+/**
  *  Main program
  */
 int
@@ -711,28 +843,24 @@ main( int argc, char* argv[] ) {
 		hx.parseParams( argc, argv );
 	}
 	
+	Editor editor;
 	
-	// TODO: Make this user selectable. Default QWERTY
-	Editor editor( MAP_QWERTY );
+	// Set parameters
+	hx.setParams( editor );
 	
 	// Event loop
-	while( hx.eventLoop( editor ) ) {
+	while ( hx.eventLoop( editor ) ) {
 		SDL_Delay( LOOP_WAIT );
 		
 		// Notify on input
 		hx.notifyByTitle();
 	}
 	
-	
 	// If the file was modified, save it to samples
 	if ( hx.isModified() ) {
-		// Starting directory
-		std::string sname = "samples/";
-		hx.rndFile( sname );
-		
 		// Save currently working document
 		editor.sync();
-		editor.cmdSave( sname );
+		editor.cmdSave( hx.working_fname );
 	}
 	
 	// End
