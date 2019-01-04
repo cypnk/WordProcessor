@@ -50,7 +50,7 @@
 /**
  *  Main event loop delay
  */
-#define LOOP_WAIT	10
+#define LOOP_WAIT	30
 
 /**
  *  Keyboard commands
@@ -242,14 +242,23 @@ HX_FORMAT {
 
 struct
 HX_LINE {
-	std::size_t		chk;	// Given line checksum in file
-	bool			good;	// Checksum matches calculated
-	std::size_t		index;	// Position in document
-	std::string		line;	// Line content
-	std::vector<HX_FORMAT>	format;	// Text formatting
+	// Given line checksum in file
+	std::size_t		chk;
 	
-	// This line is a page break
+	// Calculated and given checksums match
+	bool			good;
+	
+	// Line content
+	std::string		line;
+	
+	// Text formatting
+	std::vector<HX_FORMAT>	format;
+	
+	// This line precedes a page break
 	bool			page	= false;
+	
+	// Last position of the cursor on this line
+	std::size_t		cursor;
 };
 
 // Keyboard input (smallest affected text segment)
