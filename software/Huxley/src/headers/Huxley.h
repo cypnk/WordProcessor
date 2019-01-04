@@ -22,7 +22,6 @@ int
 WINDOW_SMAX	= 2;
 
 
-
 // Default colors
 struct
 COLORS {
@@ -81,12 +80,92 @@ COLORS {
 } COLORS;
 
 
+// Cursor and cursor clear symbols
+#define	CUR_SYMBOL		"▋"
+#define CLR_SYMBOL		" "
+
 // Symbol cache item
 struct
 CACHE {
 	std::size_t	idx;
 	SDL_Texture	*symbol;
 };
+
+// Generic hashing scheme for const char*
+constexpr std::size_t
+SYMBOL_HASH( const char* c ) {
+	std::size_t hash	= 0;
+	std::size_t i		= 0;
+	const std::size_t prime = 3313;
+	
+	while( c[i] != '\0' ) {
+		hash = c[i] + ( hash * prime );
+		++i;
+	}
+	
+	return hash;
+}
+
+// Check symbols to see if index already exists
+inline bool 
+CACHED_IDX( 
+	std::vector<CACHE>&	symbols, 
+	std::size_t&		idx 
+) {
+	auto it = std::find_if( 
+		symbols.begin(), symbols.end(),
+		[ = ]( const CACHE& find ) -> bool {
+			return find.idx == idx;
+		}
+	);
+	
+	// Symbol already is cached
+	if( it != symbols.end() ) {
+		return true;
+	}
+	
+	return false;
+}
+
+// Check symbols to see if character is already cached
+inline bool
+CACHED_CHAR (
+	std::vector<CACHE>&	symbols, 
+	const char*		c,
+	std::size_t&		idx
+) {
+	idx = SYMBOL_HASH( c );
+	return CACHED_IDX( symbols, idx );
+}
+
+
+// Command line parameter ( -c value format )
+struct
+CMD_PARAM {
+	std::string opt;
+	std::string value;
+};
+
+// Command line parameter search
+inline std::string
+CMD_FIND(
+	std::string		opt,	// Option to search
+	std::string		def,	// Fallback value
+	std::vector<CMD_PARAM>&	params	// Search params
+) {
+	auto it = std::find_if( 
+		params.begin(), params.end(),
+		[ = ]( const CMD_PARAM& find ) -> bool {
+			return 
+			find.opt == opt;
+		}
+	);
+	
+	if ( it != params.end() ) {
+		return ( *it ).value;
+	}
+	return def;
+}
 
 class Huxley {
 	private:
@@ -113,15 +192,12 @@ class Huxley {
 		bool		modified;
 		bool		
 		printFromCache( 
-			std::size_t	idx, 
-			HX_CURSOR&	cursor
+			const char* 	c, 
+			std::size_t&	col,
+			std::size_t&	ln
 		);
 		
-		void
-		cacheSymbol( 
-			std::size_t	idx, 
-			const char*	c
-		);
+		void		cacheSymbol( const char* c );
 		
 		/**
 		 *  Special key input states
@@ -143,15 +219,15 @@ class Huxley {
 			int	win;
 		} status;
 		
-		// Command line parameter ( -c value format )
-		struct
-		CMD_PARAM {
-			std::string opt;
-			std::string value;
-		};
-		
 		// Parameter holder
 		std::vector<CMD_PARAM>	parameters;
+		
+		// Text direction
+		unsigned char
+		TEXT_DIR;
+		
+		// Cursor history
+		HX_CURSOR last_cur	= { 0, 0 };
 		
 		/**
 		 *  Base operations
@@ -161,9 +237,19 @@ class Huxley {
 		void	
 		renderText(
 			SDL_Texture	*textarea,
-			HX_CURSOR&	cursor
+			std::size_t&	col,
+			std::size_t&	ln
 		);
 		void	renderInput( Editor& editor );
+		// Clear background and apply texture to main surface
+		void
+		cleanWrite( 
+			int&		x, 
+			int&		y, 
+			int&		w, 
+			int&		h, 
+			SDL_Texture	*textarea 
+		);
 		
 		/**
 		 *  Determine if key pressed is movement or edit
@@ -194,13 +280,24 @@ class Huxley {
 		// Capture all key events
 		void
 		handleKeyEvents( SDL_Event &event, Editor &editor );
+		
+		/**
+		 *  Set parameters based on command line options
+		 */
+		void	setDirection();
+		void	setKeyMap( Editor& editor );
+		void	setFile( Editor& editor );
 	
 	public:
 		// Initialize
 		Huxley( const char* title, int width, int height );
 		
+		// Currently working filename
+		std::string		working_fname;
+		
 		// Parameter parsing
 		void	parseParams( int argc, char* argv[] );
+		void	setParams( Editor& editor );
 		void	dumpParams( CMD_PARAM& param );
 		
 		/**
