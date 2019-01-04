@@ -8,13 +8,19 @@
 /**
  *  Initialize editor
  */
-Editor::Editor( unsigned char key_map ) {
+Editor::Editor() {
 	// Fresh working string
 	working_str	= "";
 	
 	// Set start position
 	working_cur	= { 0, 0 };
 	
+	// Set default line
+	syncInput( working_line, working_str, false, false );
+}
+
+void
+Editor::setKeyMap( unsigned char key_map ) {
 	// TODO: Make this user selectable. Use QWERTY as default for now
 	switch( key_map ) {
 		case MAP_QWERTY:
@@ -41,11 +47,11 @@ Editor::workingLimit( std::size_t& index ) {
  */
 void
 Editor::getWorking(
-	HX_CURSOR&	cur,
+	HX_CURSOR&	cursor,
 	std::string& 	working
 ) {
+	cursor		= working_cur;
 	working		= working_str;
-	cur		= working_cur;
 }
 
 /**
@@ -53,55 +59,58 @@ Editor::getWorking(
  */
 void
 Editor::sync() {
-	syncInput( working_str, true );
+	syncInput( working_line, working_str, true );
 }
 
 /**
  *  Add to history
  */
 void
-Editor::syncInput( std::string& working, bool line ) {
-	std::size_t lsize	= working.size();
-	
+Editor::syncInput( 
+	HX_LINE&	line, 
+	std::string&	working, 
+	bool		nline, 
+	bool		pg
+) {
 	// TODO: Compile formatting for this line
 	std::vector<HX_FORMAT> fmt;
 	fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
 	
-	// TODO: Format sync history if new line
-	if ( line ) {
-		++working_cur.line;
-		working_cur.column = 0;
-	}
+	std::size_t lsize	= 
+	working.empty() ? 0 : working.size();
 	
 	// Calculate current working string checksum
-	std::size_t chk	= toCHK( working );
+	std::size_t chk		= 
+	working.empty() ? 0 : TO_CHK( working.c_str() );
 	
-	// New line?
-	if ( working_cur.line >= working_doc.data.size() ) {
-		working_doc.data.push_back( HX_LINE {
-			chk, 
-			true, 
-			working_cur.line, 
-			working, 
-			fmt
-		} );
-		working_cur.line = working_doc.data.size();
+	// Create index before new insertion
+	std::size_t sz		= working_doc.data.size();
+	
+	// Set current line parameters including if it's a page break
+	line 			= 
+	HX_LINE { chk, true, working, fmt, pg, 0 };
+	
+	// New line
+	if ( nline ) {
+		// Add line to document
+		working_doc.data.push_back( line );
 		
-	// Edited line
+		// Increment line (previous index)
+		working_cur.line = sz;
+	
+	// Edited line? Sync changed content
 	} else {
-		working_doc.data.at( working_cur.line ) = 
-		HX_LINE {
-			chk, 
-			true, 
-			working_cur.line, 
-			working, 
-			fmt
-		};
+		if ( working_cur.line < sz ) {
+			working_doc.data.at( working_cur.line ) = line;
+		}
 	}
 	
+	// TODO: Format sync history if new line
 	if ( lsize > 0 ) {
-		// Clear after sync
-		working.clear();
+		if ( !working.empty() ) {
+			// Clear after sync
+			working.clear();
+		}
 	}
 }
 
@@ -128,7 +137,7 @@ Editor::syncLine() {
 		++it
 	) {
 		// Each segment is a line
-		syncInput( ( *it ), true );
+		syncInput( working_line, ( *it ), true );
 	}
 }
 
@@ -147,7 +156,6 @@ Editor::sendInput( char* edit, Sint32 cursor, Sint32 len ) {
 	} else {
 		INPUT_ACTIVE = false;
 		working_str.append( edit );
-		moveCursor( 1, 0 );
 	}
 	
 	// Start a new line if we're at the limit
@@ -179,32 +187,69 @@ Editor::sendCombo( int ctrl, int shift, SDL_Keycode &key ) {
  */
 void
 Editor::moveCursor( int x, int y ) {
+	// Max index
 	std::size_t sz = working_doc.data.size();
 	
-	working_cur.column	+= x;
-	
-	// Wrap down?
-	if ( ( working_cur.column + x ) > COL_SIZE ) {
-		++working_cur.line;
-		working_cur.column = 0;
+	working_cur.line += y;
+	if ( working_cur.line > sz ) {
+		working_cur.line = ( sz == 0 ) ? 0 : sz - 1;
 	}
 	
-	// Nothing else to do
-	if ( y == 0 ) {
+	working_cur.column += x;
+	if ( working_cur.column >= COL_SIZE ) {
+		// Wrap down
+		if ( x >= 1 ) {
+			if ( working_cur.line < ( sz - 1 ) ) {
+				++working_cur.line;
+			}
+			working_cur.column = 0;
+		
+		// Wrap up
+		} else {
+			working_cur.column = COL_SIZE - 1;
+			if ( working_cur.line > 0 ) {
+				--working_cur.line;
+			}
+		}
+	}
+}
+
+// Set the current working string
+void
+Editor::setWorking() {
+	std::size_t sz = working_doc.data.size();
+	
+	// Nothing synced yet?
+	if ( sz == 0 ) {
 		return;
 	}
 	
-	working_cur.line	+= y;
-	working_cur.column	= 0;
-	
-	// Wrap up?
-	if ( working_cur.line > ( sz + PG_SIZE ) ) {
-		working_cur.line = 0;
+	if ( working_cur.line < sz ) {
+		working_str = 
+		working_doc.data.at( working_cur.line ).line;
 	}
-	
-	if ( working_cur.line > ( sz + 1 ) ) {
-		working_cur.line = sz;
-	}
+}
+
+/**
+ *  Sync current working line, move cursor, and set new working line
+ */
+void
+Editor::syncMoveSet( int x, int y, bool nline ) {
+	syncInput( working_line, working_str, nline );
+	moveCursor( x, y );
+	//setWorking();
+	/*
+	// Set cursor to the end of line?
+	if ( x == COL_SIZE -1 ) {
+		if ( !working_str.empty() ) {
+			// Set from previous cursor position
+			working_cur.column = working_str.size() - 1;
+		}
+	// Line start?
+	} else if ( x == 0 ) {
+		working_cur.column = 0;	
+	}*/
+	printCursor();
 }
 
 
@@ -230,13 +275,17 @@ Editor::delLeft( int x ) {
 	// Just one space?
 	if ( sz > 1  && x == 1 ) {
 		working_str.pop_back();
+		moveCursor( -x, 0 );
+		//syncMoveSet( -x, 0 );
+	
+	// TODO: Calculate and move deletions up
 	} else if ( sz > 1 ) {
-		// TODO: Calculate and move deletions up
+		//if ( sz < ( COL_SIZE - 1 ) ) {
+		//	working_str = working_str.substr( x - 1 );
+		//} 
 	}
 	
-	moveCursor( -x, 0 );
 	printf( "Delete left of cursor" );
-	printCursor();
 }
 
 /**
@@ -248,92 +297,78 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Basic movement
 		case M_UP: {
-			moveCursor( 0, -1 );
-			printf( "Move up" );
 			// Change working string to current line content
-			
-			printCursor();
+			printf( "Move up" );
+			syncMoveSet( 0, -1 );
 			break;
 		}
 		case M_DOWN: {
-			moveCursor( 0, 1 );
 			printf( "Move down" );
-			printCursor();
+			syncMoveSet( 0, 1 );
 			break;
 		}
 		case M_LEFT: {
-			moveCursor( -1, 0 );
 			printf( "Move left" );
-			printCursor();
+			syncMoveSet( -1, 0 );
 			break;
 		}
 		case M_RIGHT: {
-			moveCursor( 1, 0 );
 			printf( "Move right" );
-			printCursor();
+			syncMoveSet( 1, 0 );
 			break;
 		}
 		
 		// Line movement
 		case M_LNSTART: {
-			working_cur.column = 0;
 			printf( "Line start" );
-			printCursor();
+			syncMoveSet( 0, 0 );
 			break;
 		}
 		case M_LNEND: {
-			working_cur.column = COL_SIZE - 1;
 			printf( "Line end" );
-			printCursor();
+			syncMoveSet( COL_SIZE - 1, 0 );
 			break;
 		}
 		
 		// Line crolling
 		case M_SCRLUP: {
-			moveCursor( 0, -SCRL_SIZE );
 			printf( "Scroll up" );
-			printCursor();
+			syncMoveSet( 0, -SCRL_SIZE );
 			break;
 		}
 		
 		case M_SCRLDN: {
-			moveCursor( 0, SCRL_SIZE );
 			printf( "Scroll down" );
-			printCursor();
+			syncMoveSet( 0, SCRL_SIZE );
 			break;
 		}
 
 		// Pagination
 		case M_PGUP: {
-			moveCursor( 0, -PG_SIZE );
 			printf( "Page up" );
-			printCursor();
+			syncMoveSet( 0, -PG_SIZE );
 			break;
 		}
 		case M_PGDN: {
-			moveCursor( 0, PG_SIZE );
 			printf( "Page down" );
-			printCursor();
+			syncMoveSet( 0, -PG_SIZE );
 			break;
 		}
 		
 		// Document start/end
 		case M_DSTART: {
+			printf( "Document start" );
+			syncMoveSet( 0, 0 );
 			working_cur.line	= 0;
 			working_cur.column	= 0;
-			printf( "Document start" );
-			printCursor();
+			setWorking();
 			break;
 		}
 		case M_DEND: {
-			while( 
-				working_cur.line < 
-				( working_doc.data.size() - 1 ) 
-			) {
-				moveCursor( COL_SIZE, PG_SIZE );
-			}
 			printf( "Document end" );
-			printCursor();
+			syncMoveSet( COL_SIZE -1, 0 );
+			working_cur.line = working_doc.data.size() - 1;
+			setWorking();
 			break;
 		}
 		
@@ -397,14 +432,17 @@ Editor::applyCommand( unsigned char action ) {
 		
 		// Insert line break
 		case T_BREAK: {
-			//printf( "Insert break\n" );
-			syncInput( working_str, true );
+			printf( "Insert break" );
+			syncMoveSet( 0, 1, true );
 			break;
 		}
+		
 		// Insert page break
 		case E_BREAK: {
 			printf( "Insert page break" );
-			syncInput( working_str, true );
+			syncInput( working_line, working_str, false, true );
+			moveCursor( 0, 1 );
+			setWorking();
 			printCursor();
 			break;
 		}
@@ -458,10 +496,15 @@ Editor::applyCommand( unsigned char action ) {
 			printCursor();
 			
 			// Test sample document (need to work more)
-			//std::string oname = "samples/republic-plato.txt";
+			std::string oname = "samples/republic-plato.txt";
 			//std::string sname = "samples/sample.hx";
-			//cmdOpen( oname );
-			//cmdSave( sname );
+			cmdOpen( oname );
+			
+			// Move cursor to origin
+			working_cur.column	= 0;
+			working_cur.line	= 0;
+			setWorking();
+			
 			break;
 		}
 		
@@ -558,17 +601,11 @@ Editor::lineAt( std::size_t& index, HX_LINE& line ) {
 }
 
 /**
- *  Client input handling
+ *  Get the current working document
  */
-std::size_t
-Editor::toCHK( std::string& line ) {
-	std::size_t chk	= 0;
-	const char* str		= line.c_str();
-	while( *str ) {
-		chk = ( chk * CHK_A ) ^ ( str[0] * CHK_B );
-		str++;
-	}
-	return chk % CHK_C;
+void
+Editor::docAt( HX_FILE& doc ) {
+	doc = working_doc;
 }
 
 // Copy from string to checksum size_t
@@ -585,14 +622,6 @@ Editor::fromCHK(
 	std::sscanf( tmp, CHK_FORMAT, &chk );
 }
 
-// Copy checksum to char array
-void 
-Editor::copyCHK(
-	char*			check,
-	std::size_t&		chk
-) {
-	snprintf( check, CHK_SIZE, CHK_FORMAT, chk );	
-}
 
 // Idea borrowed from Salvatore Sanfilippo's ( antirez ) Kilo editor
 // https://github.com/antirez/kilo
@@ -872,7 +901,7 @@ Editor::saveDoc( std::string& fname, HX_FILE&source ) {
 		++it
 	) {
 		// Copy line checksum
-		copyCHK( check, (*it).chk );
+		COPY_CHK( check, (*it).chk );
 		
 		// Append formatting data
 		saveFormat( block, (*it).format );
@@ -938,7 +967,6 @@ Editor::openDoc( std::string& fname, HX_FILE& dest ) {
 void
 Editor::segmentsToFile( 
 	std::vector<std::string>&	segments, 
-	std::size_t&			index,
 	std::size_t&			chk,
 	std::vector<HX_FORMAT>&		fmt,
 	HX_FILE& 			dest
@@ -950,14 +978,14 @@ Editor::segmentsToFile(
 		++it
 	) {
 		// Fresh checksum
-		chk	= toCHK( ( *it ) );
+		chk	= TO_CHK( ( *it ).c_str() );
 		
 		// Empty formatting
 		fmt.push_back( HX_FORMAT{ 0, 0, 0x0000 } );
 		
 		// Add line
 		dest.data.push_back( HX_LINE { 
-			chk, true, index, ( *it ), fmt 
+			chk, true, ( *it ), fmt 
 		} );
 	}
 }
@@ -989,7 +1017,7 @@ Editor::appendDoc(
 			
 			// Integrity check
 			passed			= 
-			chk == toCHK( extracted );
+			chk == TO_CHK( extracted.c_str() );
 			
 			// Integrity check failed at any point?
 			if ( !passed ) {
@@ -1005,7 +1033,6 @@ Editor::appendDoc(
 			dest.data.push_back( HX_LINE {
 				chk,
 				passed,
-				index,
 				extracted, 
 				fmt
 			} );
@@ -1018,18 +1045,19 @@ Editor::appendDoc(
 			
 			// Break raw line into segments
 			breakSegments( line, segments, true );
-			segmentsToFile( segments, chk, index, fmt, dest );
+			segmentsToFile( segments, chk, fmt, dest );
 		}
 	}
 }
 
 
 /**
- *  Open document, create lnie checksums
+ *  Open document, create line checksums
  */
 void
 Editor::cmdOpen( std::string &fname ) {
 	openDoc( fname, working_doc );
+	loaded = true;
 	
 	// Check integrity
 	if ( good ) {
