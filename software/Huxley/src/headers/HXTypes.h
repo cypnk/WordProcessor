@@ -258,7 +258,7 @@ HX_LINE {
 	bool			page	= false;
 	
 	// Last position of the cursor on this line
-	std::size_t		cursor;
+	std::size_t		cursor	= 0;
 };
 
 // Keyboard input (smallest affected text segment)
