@@ -7,6 +7,9 @@ etched or left blank, as desired. The caps are glued to the inner stem
 instead of attached by friction. The entire switch can be pulled off  
 the base sheet, if it needs to be replaced.
 
+[Blog post](http://kpz62k4pnyh5g5t2efecabkywt2aiwcnqylthqyywilqgxeiipen5xid.onion/2019/08/17/keyboard) to construction details and [original ASCII sketch](http://kpz62k4pnyh5g5t2efecabkywt2aiwcnqylthqyywilqgxeiipen5xid.onion/posts/2019/08/17/keyboard/ascii-mechanism.html).  
+Use the [Tor Browser Bundle](https://www.torproject.org/) to visit.
+
 
 ## Keyswitch mechanism
 
