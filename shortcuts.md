@@ -1,5 +1,48 @@
 # Keyboard commands 
 
+## Standard shortcuts
+All shortcuts will use the **Menu** key.  
+The **Graph** key will enable access to special characters.  
+The **Help** key will bring up this list of shortcuts and other options.
+
+<table>
+<tr><th colspan="2">Shortcut legend</th></tr>
+<tr><th>^</th><td>Menu key</td></tr>
+<tr><th colspan="2">Cursor and movement</th></tr>
+<tr><th>Shortcut</th><th>Action</th></tr>
+<tr>
+	<td>^A</td><td>Left</td>
+</tr>
+<tr>
+	<td>^D</td><td>Right</td>
+</tr>
+<tr>
+	<td>^W</td><td>Up</td>
+</tr>
+<tr>
+	<td>^S</td><td>Down</td>
+</tr>
+<tr><th colspan="2">History</th></tr>
+<tr><th>Shortcut</th><th>Action</th></tr>
+<tr>
+	<td>^Z</td><td>Undo</td>
+</tr>
+<tr>
+	<td>^Y</td><td>Redo</td>
+</tr>
+<tr><th colspan="2">Document access</th></tr>
+<tr><th>Shortcut</th><th>Action</th></tr>
+<tr>
+	<td>^N</td><td>New document</td>
+</tr>
+<tr>
+	<td>^O</td><td>Open existing document</td>
+</tr>
+</table>
+
+
+
+## Original shortcuts (most of these will likely no longer be used)
 Navigating and editing documents with shortcuts. Many of these were  
 inspired by WordStar for DOS.
 
