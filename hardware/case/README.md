@@ -21,3 +21,11 @@ Files:
 ![Bottom view](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/screenshot3.png)
 
 ![All plates in exploded view](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/screenshot4.png)
+
+
+## Keyboard layouts
+These are my current layout ideas for the actual keys. This may change in the future, however I am writing the software with this layout in mind with a few customization options since it fits my writing style for the most part.
+![Keyboard layout](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/keyboard-layout.png)
+
+This is an alternative layout with the caps and command keys swapped
+![Alternative keyboard layout](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/keyboard-layout-alt.png)
