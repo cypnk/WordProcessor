@@ -11,4 +11,5 @@ Use the [Tor Browser Bundle](https://www.torproject.org/) to access my blog.
 
 # Sub sections
 The individual segments of the project
-* [3D Printable case](https://github.com/cypnk/WordProcessor/tree/master/hardware/case) - The outer casing including the keyboard switch plates. The cover and the bottom section will need to be attached together with separate hardware friction hinges.
+* [3D Printable case](https://github.com/cypnk/WordProcessor/tree/master/hardware/case) - The outer casing including the keyboard switch plates. The cover and the bottom section will need to be attached together with separate hardware friction hinges.  
+* [Compact keyboard](https://github.com/cypnk/WordProcessor/tree/master/hardware/compact) - Version of the project using different hardware and keyboard layout.
