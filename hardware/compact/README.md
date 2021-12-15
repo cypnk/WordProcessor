@@ -43,3 +43,16 @@ Possible shortcuts for editing:
 | Next / Previous + Letter	| Alt character, symbols, or accented letter |
 | Shift + Erase | Delete forward |
 | Menu + K | Delete line |
+
+## Menu Options
+
+Possible further actions when the menu key is pressed 
+| Key	| Function		|
+|-----|-------------|
+| N | New |
+| O | Open |
+| F | Find (text search) |
+| U | Update (system software) | 
+| B | Backup (to USB drive) |
+| D | Delete (document or page)|
+| S | Settings |
