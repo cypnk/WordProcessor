@@ -1,0 +1,74 @@
+[
+    {fa:[1,1,1,1,1,1,1,1,0,0,0,1,1,0]},
+    "\n\n\n\n\n\n\n\n~\n\n`",
+    "\n\n\n\n\n\n\n\n!\n\n1",
+    "\n\n\n\n\n\n\n\n@\n\n2",
+    "\n\n\n\n\n\n\n\n#\n\n3",
+    "\n\n\n\n\n\n\n\n$\n\n4",
+    "\n\n\n\n\n\n\n\n%\n\n5",
+    "\n\n\n\n\n\n\n\n^\n\n6",
+    "\n\n\n\n\n\n\n\n&\n\n7",
+    "\n\n\n\n\n\n\n\n*\n\n8",
+    "\n\n\n\n\n\n\n\n(\n\n9",
+    "\n\n\n\n\n\n\n\n)\n\n0",
+    "\n\n\n\n\n\n\n\n_\n\n-",
+    "\n\n\n\n\n\n\n\n+\n\n=",
+    {w:1.5},"\n\n\n\n\n\n\n\n\nErase"
+],
+[
+	{w:1.5},
+	"\n\n\n\n\n\n\n\n\nTab",
+	"Query\n\n\n\n\n\n\n\n\nQ",
+	"Scr Up\n\n\n\n\n\n\n\n\nW",
+	"Up\nUp Sel\n\n\n\n\n\n\n\nE",
+	"Pg Up\n\n\n\n\n\n\n\n\nR",
+	"Del Wd\nSup\n\n\n\n\n\n\n\nT",
+	"Del Ln\nItalic\n\n\n\n\n\n\n\nY",
+	"Undo\nRedo\n\n\n\n\n\n\n\nU",
+	"Indent\nOdnt\n\n\n\n\n\n\n\nI",
+	"Open\n\n\n\n\n\n\n\n\nO",
+	"Prog\n\n\n\n\n\n\n\n\nP",
+	
+	"Set\n\n\n\n\n\n\n\n{\n\n[",
+	"Opt\n\n\n\n\n\n\n\n}\n\n]",
+	"Stat\n\n\n\n\n\n\n\n|\n\n\\"
+],
+[
+	{w:1.75},
+	"\n\n\n\n\n\n\n\n\nMenu",
+	"Lft Wd\nLft Sel\n\n\n\n\n\n\n\nA",
+	"Left\nUndl\n\n\n\n\n\n\n\nS",
+	"Right\nDup\n\n\n\n\n\n\n\nD",
+	{n:true},
+	"Rgt Wd\nRgt Sel\n\n\n\n\n\n\n\nF",
+	"Del Lft\n\n\n\n\n\n\n\n\nG",
+	"Del Rgt\n\n\n\n\n\n\n\n\nH",
+	{n:true},
+	"Cur\nPos\n\n\n\n\n\n\n\nJ",
+	"Ln St\nDn Ln\n\n\n\n\n\n\n\nK",
+	"Ln Ed\nUp Ln\n\n\n\n\n\n\n\nL",
+	
+	"BS\n\n\n\n\n\n\n\n:\n\n;",
+	"BE\n\n\n\n\n\n\n\n\"\n\n'",
+	
+	{w:1.75},"\n\n\n\n\n\n\n\n\nEnter"
+],
+[
+	{w:2.25},
+	"\nOption\n\n\n\n\n\n\n\nShift",
+	"Scr Dn\n\n\n\n\n\n\n\n\nZ",
+	"Down\nDn Sel\n\n\n\n\n\n\n\nX",
+	"Pg Dn\nCopy\n\n\n\n\n\n\n\nC",
+	"Paste\nSub\n\n\n\n\n\n\n\nV",
+	"Block\nBold\n\n\n\n\n\n\n\nB",
+	"New\n\n\n\n\n\n\n\n\nN",
+	"Memo\n\n\n\n\n\n\n\n\nM",
+	
+	"DS\n\n\n\n\n\n\n\n<\n\n,",
+	"DE\n\n\n\n\n\n\n\n>\n\n.",
+	"Info\nSym\n\n\n\n\n\n\n?\n\n/",
+	
+	{w:2.25},
+	"\nOption\n\n\n\n\n\n\n\nShift"
+],
+[{x:4.14,w:6.25},""]
