@@ -163,11 +163,17 @@ END;-- --
 
 CREATE VIEW content_activity AS SELECT 
 	text_lines.id AS text_id,
-	text_lines.contents AS text_contents
-	FROM text_lines;-- --
+	text_lines.contents AS text_contents,
+	text_lines.sort_order AS text_sort,
+	text_lines.cur_pos AS cur_pos,
+	pages.id AS page_id
+	pages.sort_order AS page_sort
+	
+	FROM text_lines
+	JOIN pages ON text_lines.page_id = pages.id;-- --
 
 CREATE TRIGGER content_maintenance INSTEAD OF 
-	UPDATE OF contents ON content_activity
+	UPDATE OF text_contents ON content_activity
 BEGIN 
 	UPDATE text_lines SET text_dir = 0 WHERE text_dir < 0;
 	UPDATE pages SET text_dir = 0 WHERE text_dir < 0;
