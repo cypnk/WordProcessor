@@ -43,6 +43,7 @@ Editing:
 |-------------|-------------|
 | ^Z | Undo |
 | ^Y | Redo |
+| Shift + Shift | Caps lock |
 | ^N | New document |
 | ^O | Open document |
 
