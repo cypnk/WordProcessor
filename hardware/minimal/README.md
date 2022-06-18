@@ -22,7 +22,7 @@ Total, 54 keys with 2 sets of 2.25u Costar stabilizers and 1 set of 6.25u spaceb
 
 ## Shortcuts
 
-[Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 10 shortcuts:
+[Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 11 shortcuts:
 
 ![minimal keyboard layout](https://github.com/cypnk/WordProcessor/raw/master/hardware/minimal/layout_cmd.png)
 
