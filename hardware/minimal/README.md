@@ -20,6 +20,18 @@ The key arrangement will be identical between shortcuts.
 
 Total, 54 keys with 2 sets of 2.25u Costar stabilizers and 1 set of 6.25u spacebar stabilizers.
 
+Alternate version which doesn't use any stablizers except for the spacebar and is more conducive toward scavanged keycaps.
+
+![keyboard limited stab layout](https://github.com/cypnk/WordProcessor/raw/master/hardware/minimal/layout_ns.png)
+
+|Key size|Count|
+|--------|-----|
+|1u      |  47 |
+|1.5u    |   6 |
+|6.25u   |   1 |
+
+Total, 54 keys with only 1 set of 6.25u spacebar stabilizers.
+
 ## Shortcuts
 
 [Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 11 shortcuts:
