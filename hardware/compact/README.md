@@ -9,6 +9,9 @@ This is a parallel project which is meant to explore writing and building possib
 There are 8 mounting screw holes 3mm in diameter each and the corner radius is 3mm. The top case or lid may be attached via magnets when closed.
 The top layer and keyboard switch plate may be 3D printed, CNC milled, or resin cast as one unit. If 3D printed or cast, the switch plate and top border are provied as one [STL file](https://github.com/cypnk/WordProcessor/blob/master/hardware/compact/switchplate.stl).
 
+Possible connection matrix for the above layout.
+![wiring layout](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/compact/matrix.png)
+
 If the switch plate itself is to be made from a separate material from the top, such as metal, there's a separate [STL file](https://github.com/cypnk/WordProcessor/blob/master/hardware/compact/switchtop.stl). The switch top is an interface with the lid and also provides an aesthetic boundary for the keys while in use. It should look like this when made from its [DXF file](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/compact/switchtop.dxf).
 ![switch top template](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/compact/switchtop.svg)
 
