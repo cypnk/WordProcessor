@@ -9,10 +9,22 @@ This is an experimental iteration for a simple note-taking device. The platform 
 |Key size|Count|
 |--------|-----|
 |1u      |  30 |
+|1.25u   |   2 |
+|1.75u   |   2 |
+|2.25u   |   2 |
+|Total   |  37 |
+
+Command version with extra functionality.
+
+![keyboard layout](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/keyboard-cmd.png)
+
+|Key size|Count|
+|--------|-----|
+|1u      |  30 |
 |1.25u   |   4 |
 |1.75u   |   2 |
 |2.25u   |   2 |
 |Total   |  38 |
 
-Key gasket template.
-![gasket template](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/switch_gasket.svg)
+Command version key gasket template.
+![gasket template](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/switch_gasket_cmd.svg)
