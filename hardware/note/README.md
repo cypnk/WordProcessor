@@ -4,7 +4,7 @@ This is an experimental iteration for a simple note-taking device. The platform 
 
 ## Keyboard layout
 
-Simpler keyboard [version](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_case.stl).
+Simpler keyboard [version](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_case.stl) and [switch plate](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_switch.stl).
 
 ![keyboard layout](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/keyboard-layout.png)
 
@@ -20,7 +20,7 @@ Key gasket template.
 
 ![gasket template](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/switch_gasket.svg)
 
-Command [version](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_case_cmd.stl) with extra functionality.
+Command [version](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_case_cmd.stl) and [switch plate](https://github.com/cypnk/WordProcessor/blob/master/hardware/note/note_switch_cmd.stl) with extra functionality.
 
 ![keyboard layout](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/keyboard-cmd.png)
 
