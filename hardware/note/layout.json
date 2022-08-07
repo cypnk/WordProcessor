@@ -1,0 +1,4 @@
+["~\n`\n\n\n\n\n\n\n\nTab","!\n1\n\n\n\n\n\n\n\nQ","@\n2\n\n\n\n\n\n\n\nW","#\n3\n\n\n\n\n\n\n\nE","$\n4\n\n\n\n\n\n\n\nR","%\n5\n\n\n\n\n\n\n\nT","^\n6\n\n\n\n\n\n\n\nY","&\n7\n\n\n\n\n\n\n\nU","*\n8\n\n\n\n\n\n\n\nI","(\n9\n\n\n\n\n\n\n\nO",")\n0\n\n\n\n\n\n\n\nP",{a:7},"Erase"],
+[{w:1.25},"Control","A","S","D",{n:true},"F","G",{a:4},"{\n[\n\n\n\n\n\n\n\nH",{n:true},"}\n]\n\n\n\n\n\n\n\nJ",":\n;\n\n\n\n\n\n\n\nK","\"\n'\n\n\n\n\n\n\n\nL",{a:7,w:1.75},"Enter"],
+[{w:1.75},"Shift","Z","X","C","V","B",{a:4},"|\n\\\n\n\n\n\n\n\n\nN","_\n-\n\n\n\n\n\n\n\nM","+\n=\n\n\n\n\n\n\n<\n\n,","?\n/\n\n\n\n\n\n\n>\n\n.",{a:7,w:1.25},"Shift"],
+[{x:1.4,w:1.5},"Layer",{w:6.25},"",{w:1.5},"Graph"]
