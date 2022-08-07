@@ -14,6 +14,9 @@ This is an experimental iteration for a simple note-taking device. The platform 
 |2.25u   |   2 |
 |Total   |  37 |
 
+Key gasket template.
+![gasket template](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/switch_gasket.svg)
+
 Command version with extra functionality.
 
 ![keyboard layout](https://raw.githubusercontent.com/cypnk/WordProcessor/master/hardware/note/keyboard-cmd.png)
