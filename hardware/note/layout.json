@@ -26,8 +26,8 @@
 	"\nDel Rgt\n\n\n\n\n+\n=\n\nH",
 	{n:true},
 	"\nCur\n\n\n\n\n:\n;\n\nJ",
-	"\nLn Sta\n\n\n\n\n\"\n'\n\nK",
-	"\nLn End\n\n\n\n\n\n\n\nL",
+	"\nLn Sta\n\n\n\n\n{\n[\n\nK",
+	"\nLn End\n\n\n\n\n}\n]\n\nL",
 	{w:1.75},
 	"\n\n\n\n\n\n\n\n\nReturn"
 ],
@@ -42,8 +42,8 @@
 	"\nLn Brk\nBold\n\n\n\n\n\n\nB",
 	"\nNew\n\n\n\n\n\n\n\nN",
 	"\nMemo\n\n\n\n\n\n\n\nM",
-	"\nSta\n\n\n\n\n\"\n'\n\n<\n,",
-	"\nEnd\n\n\n\n\n?\n/\n\n>\n.",
+	"\nSta\n\n\n\n\n<\n\"\n\n,\n,",
+	"\nEnd\n\n\n\n\n>\n/\n\n.\n?",
 	{a:4,fa:[0,1,1,1,1,1,1,1,0,3,0]},
 	{w:1.25},
 	"\n\nOption\n\n\n\n\n\n\nShift"
