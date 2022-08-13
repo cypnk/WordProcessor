@@ -29,3 +29,7 @@ These are my current layout ideas for the actual keys. This may change in the fu
 
 This is an alternative layout with the caps and command keys swapped
 ![Alternative keyboard layout](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/keyboard-layout-alt.png)
+
+Possible connection matrix for the above layout. 
+
+![connection matrix](https://github.com/cypnk/WordProcessor/blob/master/hardware/case/matrix.png)
