@@ -32,6 +32,10 @@ Alternate version which doesn't use any stablizers except for the spacebar and i
 
 Total, 54 keys with only 1 set of 6.25u spacebar stabilizers.
 
+Possible connection matrix for the above layout. 
+
+![keyboard layout](https://github.com/cypnk/WordProcessor/raw/master/hardware/minimal/matrix.png)
+
 ## Shortcuts
 
 [Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 11 shortcuts:
