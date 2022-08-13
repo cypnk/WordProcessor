@@ -19,7 +19,7 @@ CREATE INDEX idx_doc_updated ON documents ( updated );-- --
 CREATE TRIGGER doc_update AFTER UPDATE ON documents FOR EACH ROW
 BEGIN
 	UPDATE documents SET updated = CURRENT_TIMESTAMP 
-		WHERE id = OLD.id;
+		WHERE id = NEW.id;
 END;-- --
 
 CREATE TABLE pages(
@@ -68,6 +68,12 @@ WHEN NEW.contents IS NOT ''
 BEGIN
 	REPLACE INTO text_search( docid, body )
 		VALUES( NEW.id, NEW.contents );
+END;-- --
+
+CREATE TRIGGER text_blank AFTER UPDATE ON text_lines FOR EACH ROW 
+WHEN NEW.contents IS ''
+BEGIN
+	DELETE FROM text_search WHERE docid = NEW.id;
 END;-- --
 
 CREATE TRIGGER text_delete BEFORE DELETE ON text_lines FOR EACH ROW 
