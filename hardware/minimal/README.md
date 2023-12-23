@@ -38,7 +38,7 @@ Possible connection matrix for the above layout.
 
 ## Shortcuts
 
-[Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 11 shortcuts:
+[Minimal command](https://github.com/cypnk/WordProcessor/blob/master/hardware/minimal/layout_cmd.json) version with only 13 shortcuts:
 
 ![minimal keyboard layout](https://github.com/cypnk/WordProcessor/raw/master/hardware/minimal/layout_cmd.png)
 
